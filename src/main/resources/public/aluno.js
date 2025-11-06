@@ -1,0 +1,75 @@
+const popup = document.getElementById("popup");
+const abrir = document.getElementById("abrir-popup");
+const fechar = document.querySelector(".close");
+const cancelar = document.getElementById("cancelar");
+const enviar = document.getElementById("enviar");
+const toast = document.getElementById("toast");
+
+let textoEditado = false;
+let nota = 0;
+
+abrir.onclick = () => {
+    popup.style.display = "flex";
+    document.getElementById("texto-resenha").value = "";
+    document.getElementById("livro").value = "";
+    document.getElementById("autor").value = "";
+    document.getElementById("paginas").value = "";
+    nota = 0;
+    preencherEstrelas(nota);
+    textoEditado = false;
+};
+
+fechar.onclick = fecharPopup;
+cancelar.onclick = fecharPopup;
+window.onclick = e => { if (e.target === popup) fecharPopup(); }
+
+function fecharPopup() {
+    if (textoEditado && !confirm("tem certeza que quer sair sem salvar?")) return;
+    popup.style.display = "none";
+}
+
+document.getElementById("texto-resenha").addEventListener("input", () => {
+    textoEditado = true;
+});
+
+const estrelas = document.querySelectorAll('.estrela');
+
+estrelas.forEach(e => {
+    e.addEventListener('mouseover', () => preencherEstrelas(e.dataset.value));
+    e.addEventListener('click', () => { nota = e.dataset.value; preencherEstrelas(nota); });
+    e.addEventListener('mouseout', () => preencherEstrelas(nota));
+});
+
+function preencherEstrelas(valor) {
+    estrelas.forEach(e => e.classList.toggle('ativa', e.dataset.value <= valor));
+}
+
+function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function validarCampos() {
+    const livro = document.getElementById("livro").value.trim();
+    const autor = document.getElementById("autor").value.trim();
+    const paginas = document.getElementById("paginas").value.trim();
+    const resenha = document.getElementById("texto-resenha").value.trim();
+    if (!livro || !autor || !paginas || !resenha || nota == 0) return false;
+    return true;
+}
+
+enviar.onclick = () => {
+    if (!validarCampos()) {
+        showToast("Preencha todos os campos!");
+        return;
+    }
+
+    const livro = document.getElementById("livro").value.trim();
+    const autor = document.getElementById("autor").value.trim();
+    const paginas = document.getElementById("paginas").value.trim();
+    const resenha = document.getElementById("texto-resenha").value.trim();
+
+    alert(`resenha enviada (simulação)\n\nLivro: ${livro}\nAutor: ${autor}\nPáginas: ${paginas}\nNota: ${nota} estrelas\n\n${resenha}`);
+    popup.style.display = "none";
+};

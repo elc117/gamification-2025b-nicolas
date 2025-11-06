@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard do Aluno</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="aluno-body">
+    <header>
+        <h1>painel do aluno</h1>
+        <h1>Mogbook</h1>
+        <div>bem-vindo, <strong>aluno</strong></div>
+    </header>
+
+    <div class="main-container">
+        <div>
+            <div class="card">
+                <h2>leaderboard da turma</h2>
+                <div id="leaderboard">
+                    <p>carregando...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>nova resenha</h2>
+                <button id="abrir-popup">abrir editor</button>
+            </div>
+
+            <div class="card">
+                <h2>histórico recente</h2>
+                <div id="historico">
+                    <div class="resenha-item">resenha 1</div>
+                    <div class="resenha-item">resenha 2</div>
+                </div>
+                <button id="ver-todas">ver todas</button>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h2>meus pontos</h2>
+                <div class="score" id="pontos">1200</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <div class="form-grid">
+            <div class="campo-input">
+                <label for="livro">nome do livro:</label>
+                <input type="text" id="livro" placeholder="digite o nome do livro">
+            </div>
+
+            <div class="campo-input">
+                <label for="autor">autor:</label>
+                <input type="text" id="autor" placeholder="digite o autor">
+            </div>
+
+            <div class="campo-input">
+                <label for="paginas">páginas:</label>
+                <input type="number" id="paginas" placeholder="número de páginas">
+            </div>
+
+            <div class="campo-input">
+                <label>nota:</label>
+                <div class="estrelas">
+                <span class="estrela" data-value="1">★</span>
+                <span class="estrela" data-value="2">★</span>
+                <span class="estrela" data-value="3">★</span>
+                <span class="estrela" data-value="4">★</span>
+                <span class="estrela" data-value="5">★</span>
+                </div>
+            </div>
+            </div>
+
+            <label for="texto-resenha">resenha:</label>
+            <textarea id="texto-resenha" placeholder="escreva sua resenha aqui..."></textarea>
+
+            <div class="popup-buttons">
+            <button id="cancelar">cancelar</button>
+            <button id="enviar">enviar</button>
+            </div>
+        </div>
+    </div>
+    <div id="toast" class="toast">Preencha todos os campos!</div>
+
+    <script src="aluno.js"></script>
+</body>
+</html>

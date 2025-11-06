@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="index-body">
+    <header>
+        <h1> </h1>
+        <h1>mogbook</h1>
+        <div></div>
+    </header>
+
+    <div class="login-container">
+        <h2>acesso</h2>
+        <form action="/login" method="post">
+            <input type="text" name="usuario" placeholder="usuário" required>
+            <input type="password" name="senha" placeholder="senha" required>
+            <button type="submit">entrar</button>
+            <div id="toast" class="toast">login e/ou senha errado(s)</div>
+        </form>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>carregando...</p>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,2 +1,2 @@
 # MogBook
-## Software para professores de Letras em sala de aula 
+## Software para professores de Linguagens em sala de aula 
