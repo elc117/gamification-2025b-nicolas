@@ -80,3 +80,42 @@ function showToast(msg) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const lista = document.getElementById('lista-leaderboard');
+    const toggleBtn = document.getElementById('toggle-btn');
+    let expanded = false;
+    let alunos = [];
+
+    const user = JSON.parse(localStorage.getItem('usuario'));
+    if (user) {
+        document.querySelector('header div strong').textContent = user.nome;
+    } else {
+        window.location.href = 'index.html';
+    }
+
+    async function carregarLeaderboard() {
+    const res = await fetch('/leaderboard');
+    alunos = await res.json();
+    renderizar();
+    }
+
+    function renderizar() {
+    lista.innerHTML = '';
+    const limite = expanded ? alunos.length : Math.min(10, alunos.length);
+    alunos.slice(0, limite).forEach((a, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
+        lista.appendChild(li);
+    });
+    toggleBtn.style.display = alunos.length > 10 ? 'block' : 'none';
+    toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+    expanded = !expanded;
+    renderizar();
+    });
+
+    carregarLeaderboard();
+});

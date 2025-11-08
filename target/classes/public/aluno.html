@@ -4,23 +4,17 @@
     <meta charset="UTF-8">
     <title>dashboard do Aluno</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/mb.png">
 </head>
 <body class="aluno-body">
     <header>
         <h1>painel do aluno</h1>
         <h1>Mogbook</h1>
-        <div>bem-vindo, <strong>aluno</strong></div>
+        <div>bem-vindo(a), <strong>aluno(a)</strong></div>
     </header>
 
     <div class="main-container">
         <div>
-            <div class="card">
-                <h2>leaderboard da turma</h2>
-                <div id="leaderboard">
-                    <p>carregando...</p>
-                </div>
-            </div>
-
             <div class="card">
                 <h2>nova resenha</h2>
                 <button id="abrir-popup">abrir editor</button>
@@ -40,6 +34,14 @@
             <div class="card">
                 <h2>meus pontos</h2>
                 <div class="score" id="pontos">1200</div>
+            </div>
+            
+            <div class="card">
+                <h2>leaderboard</h2>
+                <div id="leaderboard">
+                    <ul id="lista-leaderboard"></ul>
+                    <button id="toggle-btn">mostrar mais</button>
+                </div>
             </div>
         </div>
     </div>

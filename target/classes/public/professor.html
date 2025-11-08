@@ -4,34 +4,30 @@
     <meta charset="UTF-8">
     <title>painel do professor</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/mb.png">
 </head>
 <body class="prof-body">
     <header>
         <h1>painel do professor</h1>
         <h1>mogbook</h1>
-        <div>bem-vindo, <strong>professor</strong></div>
+        <div>bem-vindo(a), <strong>professor</strong></div>
     </header>
 
     <div class="main-container">
         <div>
             <div class="card">
-                <h2>leaderboard por turma</h2>
-                <div id="leaderboard">
-                    <p><strong>turma a:</strong></p>
-                    <ol>
-                        <li>ana — 1200 pts</li>
-                        <li>joão — 1100 pts</li>
-                        <li>bia — 980 pts</li>
-                    </ol>
-                    <p><strong>turma b:</strong></p>
-                    <ol>
-                        <li>mario — 1020 pts</li>
-                        <li>lara — 960 pts</li>
-                        <li>gustavo — 940 pts</li>
-                    </ol>
+                <h2>resenhas pendentes</h2>
+                <div id="pendentes">
+                    <div class="resenha-item">
+                        <p><strong>ana</strong> — “o cortiço”</p>
+                        <button class="btn corrigir" data-nome="ana" data-livro="o cortiço">corrigir</button>
+                    </div>
+                    <div class="resenha-item">
+                        <p><strong>joão</strong> — “capitães da areia”</p>
+                        <button class="btn corrigir" data-nome="joão" data-livro="capitães da areia">corrigir</button>
+                    </div>
                 </div>
-            </div>
-
+            </div> 
             <div class="card">
                 <h2>alunos</h2>
                 <table>
@@ -52,20 +48,7 @@
             </div>
         </div>
 
-        <div>
-            <div class="card">
-                <h2>resenhas pendentes</h2>
-                <div id="pendentes">
-                    <div class="resenha-item">
-                        <p><strong>ana</strong> — “o cortiço”</p>
-                        <button class="btn corrigir" data-nome="ana" data-livro="o cortiço">corrigir</button>
-                    </div>
-                    <div class="resenha-item">
-                        <p><strong>joão</strong> — “capitães da areia”</p>
-                        <button class="btn corrigir" data-nome="joão" data-livro="capitães da areia">corrigir</button>
-                    </div>
-                </div>
-            </div>  
+        <div> 
             <div class="card">
                 <h2>cadastrar aluno</h2>
                 <form id="cadastro-form">
@@ -74,6 +57,14 @@
                     <button type="submit">cadastrar</button>
                 </form>
                 <div id="toast" class="toast"></div>
+            </div>
+            
+            <div class="card">
+                <h2>leaderboard</h2>
+                <div id="leaderboard">
+                    <ul id="lista-leaderboard"></ul>
+                    <button id="toggle-btn">mostrar mais</button>
+                </div>
             </div>
         </div>
     </div>

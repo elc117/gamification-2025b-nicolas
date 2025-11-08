@@ -10,7 +10,7 @@ public class Main {
         db.createTables();
         
         if (db.isEmpty()) {
-            db.addUser("professor", "1234", "professor");
+            db.addUser("professor", "1234", "professor", 0);
         }
 
         Javalin app = Javalin.create(config -> {
@@ -35,8 +35,13 @@ public class Main {
 
         app.post("/cadastro-aluno", ctx -> {
             var req = gson.fromJson(ctx.body(), NovoAlunoRequest.class);
-            db.addUser(req.nome, req.senha, "aluno");
+            db.addUser(req.nome, req.senha, "aluno", 0);
             ctx.result("aluno cadastrado");
+        });
+
+        app.get("/leaderboard", ctx -> {
+            var alunos = db.getTopAlunos(10);
+            ctx.json(alunos);
         });
     }
 

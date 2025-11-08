@@ -101,21 +101,6 @@ header h1:nth-child(2) {
     padding-bottom: 8px;
 }
 
-button, .btn {
-    background: #f5c7c7;
-    color: #333;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-weight: 600;
-    padding: 8px 14px;
-}
-
-button:hover, .btn:hover {
-    background: #f3b2b2;
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -307,4 +292,83 @@ textarea {
   border: 1px solid #ddd;
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.cadastro-container {
+    background: linear-gradient(135deg, #222, #333);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    width: 340px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+#cadastro-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cadastro-container h2 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input {
+    font-family: "Poppins", sans-serif;
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #f5c7c7;
+    border-radius: 8px;
+    background: #f9f9f9;
+    color: #333;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+}
+
+#cadastro-form input::placeholder {
+    color: #bbb;
+}
+
+#cadastro-form input:focus {
+    background: #ffffff;
+    transform: scale(1.02);
+}
+
+button, .btn {
+    background: #f5c7c7;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    transition: 0.2s;
+}
+
+#cadastro-form button {
+    width: 100%;
+    font-size: 16px;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+.card .toast {
+    background: linear-gradient(135deg, #00b341, #00d45a);
+    box-shadow: 0 0 10px rgba(0, 255, 100, 0.4);
 }

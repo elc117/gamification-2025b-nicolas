@@ -24,6 +24,19 @@ form.addEventListener('submit', async (e) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, senha })
+            })
+            .then(async res => {
+            if (res.ok) {
+                const user = await res.json();
+                localStorage.setItem('usuario', JSON.stringify(user));
+                if (user.tipo === 'professor') {
+                window.location.href = 'professor.html';
+                } else {
+                window.location.href = 'aluno.html';
+                }
+            } else {
+                alert('usuário ou senha inválidos');
+            }
         });
 
         if (response.ok) {

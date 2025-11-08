@@ -1,7 +1,8 @@
 package com.mogbook;
 
 import java.sql.*;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     private final String url;
@@ -27,35 +28,36 @@ public class Database {
                     id TEXT PRIMARY KEY,
                     nome TEXT NOT NULL,
                     senha TEXT NOT NULL,
-                    tipo TEXT CHECK(tipo IN ('aluno','professor')) NOT NULL
+                    tipo TEXT CHECK(tipo IN ('aluno','professor')) NOT NULL,
+                    pontos INTEGER NOT NULL DEFAULT 0
                 );
                 """;
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("tabela criada/verificada");
 
-            // verifica se tem algum professor
+            // cria professor padrão se não existir
             String check = "SELECT COUNT(*) FROM usuarios WHERE tipo = 'professor'";
             ResultSet rs = stmt.executeQuery(check);
             if (rs.next() && rs.getInt(1) == 0) {
-                // cria professor padrão
-                addUser("professor", "1234", "professor");
-                System.out.println("professor padrão criado (id 000, senha 1234)");
+                addUser("professor", "1234", "professor", 0);
+                System.out.println("professor padrão criado");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void addUser(String nome, String senha, String tipo) {
+    public void addUser(String nome, String senha, String tipo, Integer pontos) {
         String newId = gerarNovoId();
-        String sql = "INSERT INTO usuarios (id, nome, senha, tipo) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (id, nome, senha, tipo, pontos) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newId);
             pstmt.setString(2, nome);
             pstmt.setString(3, senha);
             pstmt.setString(4, tipo);
+            pstmt.setInt(5, pontos);
             pstmt.executeUpdate();
             System.out.println("usuário criado com id: " + newId);
         } catch (SQLException e) {
@@ -63,17 +65,18 @@ public class Database {
         }
     }
 
-    public User getUserById(String id) {
-        String sql = "SELECT * FROM usuarios WHERE id = ?";
+    public User getUserByName(String nome) {
+        String sql = "SELECT * FROM usuarios WHERE nome = ?";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id);
+            pstmt.setString(1, nome);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 return new User(
                         rs.getString("id"),
                         rs.getString("nome"),
                         rs.getString("senha"),
-                        rs.getString("tipo")
+                        rs.getString("tipo"),
+                        rs.getInt("pontos")
                 );
             }
         } catch (SQLException e) {
@@ -93,26 +96,7 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "000"; // primeiro id
-    }
-    
-    public User getUserByName(String nome) {
-        String sql = "SELECT * FROM usuarios WHERE nome = ?";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, nome);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return new User(
-                        rs.getString("id"),
-                        rs.getString("nome"),
-                        rs.getString("senha"),
-                        rs.getString("tipo")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return "000";
     }
 
     public boolean isEmpty() {
@@ -126,4 +110,23 @@ public class Database {
         }
     }
 
+    // novo método para leaderboard
+    public List<User> getTopAlunos(int limit) {
+        List<User> lista = new ArrayList<>();
+        String sql = "SELECT nome, pontos FROM usuarios WHERE tipo = 'aluno' ORDER BY pontos DESC LIMIT ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                User u = new User(null, rs.getString("nome"), "", "aluno", rs.getInt("pontos"));
+                lista.add(u);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }
