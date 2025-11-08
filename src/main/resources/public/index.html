@@ -14,11 +14,11 @@
 
     <div class="login-container">
         <h2>acesso</h2>
-        <form action="/login" method="post">
-            <input type="text" name="usuario" placeholder="usuário" required>
-            <input type="password" name="senha" placeholder="senha" required>
+        <form id="login-form">
+            <input type="text" id="usuario" name="usuario" placeholder="usuário" required>
+            <input type="password" id="senha" name="senha" placeholder="senha" required>
             <button type="submit">entrar</button>
-            <div id="toast" class="toast">login e/ou senha errado(s)</div>
+            <div id="toast" class="toast"></div>
         </form>
     </div>
 

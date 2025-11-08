@@ -1,29 +1,52 @@
 package com.mogbook;
 
 import io.javalin.Javalin;
-import io.javalin.http.Context;
+import io.javalin.http.staticfiles.Location;
+import com.google.gson.Gson;
 
 public class Main {
     public static void main(String[] args) {
-        var app = Javalin.create(config -> {
-            config.staticFiles.add("/public");
-        }).start(7070);
+        Database db = new Database("mogbook.db");
+        db.createTables();
+        
+        if (db.isEmpty()) {
+            db.addUser("professor", "1234", "professor");
+        }
 
-        app.get("/", ctx -> ctx.redirect("index.html"));
+        Javalin app = Javalin.create(config -> {
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.directory = "/public";
+                staticFiles.location = Location.CLASSPATH;
+            });
+        }).start(7000);
 
-        app.post("/login", Main::fazerLogin);
+        Gson gson = new Gson();
+
+        app.post("/login", ctx -> {
+            var req = gson.fromJson(ctx.body(), LoginRequest.class);
+            User user = db.getUserByName(req.usuario);
+
+            if (user != null && user.getSenha().equals(req.senha)) {
+                ctx.json(user);
+            } else {
+                ctx.status(401);
+            }
+        });
+
+        app.post("/cadastro-aluno", ctx -> {
+            var req = gson.fromJson(ctx.body(), NovoAlunoRequest.class);
+            db.addUser(req.nome, req.senha, "aluno");
+            ctx.result("aluno cadastrado");
+        });
     }
 
-    private static void fazerLogin(Context ctx) {
-        String usuario = ctx.formParam("usuario");
-        String senha = ctx.formParam("senha");
+    private static class NovoAlunoRequest {
+        String nome;
+        String senha;
+    }
 
-        if ("professor".equals(usuario) && "123".equals(senha)) {
-            ctx.redirect("/professor.html");
-        } else if ("aluno".equals(usuario) && "123".equals(senha)) {
-            ctx.redirect("/aluno.html");
-        } else {
-            ctx.redirect("/index.html?erro=1");
-        }
+    private static class LoginRequest {
+        String usuario;
+        String senha;
     }
 }

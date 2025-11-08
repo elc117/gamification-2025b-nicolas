@@ -45,3 +45,38 @@ function tentarFechar() {
 window.onclick = (e) => { if (e.target === popup) tentarFechar();
     
 };
+
+const form = document.getElementById('cadastro-form');
+const toast = document.getElementById('toast');
+
+form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const nome = form.nome.value.trim();
+    const senha = form.senha.value.trim();
+
+    if (!nome || !senha) {
+        showToast('preencha todos os campos');
+        return;
+    }
+
+    try {
+        const res = await fetch('/cadastro-aluno', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, senha })
+        });
+
+        if (res.ok) showToast('aluno cadastrado com sucesso');
+        else showToast('erro ao cadastrar');
+    } catch {
+        showToast('erro de conexão');
+    }
+
+    form.reset();
+});
+
+function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}

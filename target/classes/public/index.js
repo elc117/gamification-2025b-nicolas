@@ -1,15 +1,12 @@
-// elementos
 const form = document.querySelector('.login-container form');
 const loading = document.getElementById('loading-overlay');
 const toast = document.getElementById("toast");
 
-// garante que overlay não fique visível ao voltar à página
 window.addEventListener('pageshow', () => {
     loading.style.display = 'none';
 });
 
-// submit do login
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const usuario = form.usuario.value.trim();
@@ -20,30 +17,39 @@ form.addEventListener('submit', e => {
         return;
     }
 
-    // simulação de login: digitar "erro" falha, qualquer outro sucesso
-    const loginSucesso = usuario.toLowerCase() !== 'erro';
+    loading.style.display = 'flex';
 
-    if (loginSucesso) {
-        // mostra tela de loading
-        loading.style.display = 'flex';
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, senha })
+        });
 
-        setTimeout(() => {
-            if (usuario.toLowerCase() === 'professor') {
+        if (response.ok) {
+            const data = await response.json();
+            if (data.tipo === 'professor') {
                 window.location.href = 'professor.html';
-            } else {
+            } else if (data.tipo === 'aluno') {
                 window.location.href = 'aluno.html';
+            } else {
+                showToast('tipo de usuário desconhecido');
             }
-        }, 1500);
-    } else {
-        // mostra toast de erro
-        showToast('login e/ou senha errado(s)');
+        } else if (response.status === 401) {
+            showToast('login e/ou senha errado(s)');
+        } else {
+            showToast('erro inesperado no servidor');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('falha ao conectar ao servidor');
+    } finally {
+        loading.style.display = 'none';
     }
 });
 
 function showToast(msg) {
     toast.textContent = msg;
-    toast.classList.add("show");
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 5000);
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
 }
