@@ -17,7 +17,10 @@
         <h2>acesso</h2>
         <form id="login-form">
             <input type="text" id="usuario" placeholder="usuário" required>
-            <input type="password" id="senha" placeholder="senha" required>
+            <div class="senha-container">
+                <input type="password" id="senha" placeholder="senha" required>
+                <span id="toggle-senha">👁️</span>
+            </div>
             <button type="submit">entrar</button>
         </form>
         <div id="toast" class="toast"></div>

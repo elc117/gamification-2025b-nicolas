@@ -43,6 +43,26 @@ public class Main {
             var alunos = db.getTopAlunos(10);
             ctx.json(alunos);
         });
+
+        app.post("/resenha", ctx -> {
+            var gson = new Gson();
+            var req = gson.fromJson(ctx.body(), ResenhaRequest.class);
+
+            if (req.alunoId == null || req.livro == null || req.autor == null || req.paginas == 0 || req.nota == 0 || req.conteudo == null) {
+                ctx.status(400).result("dados incompletos");
+                return;
+            }
+
+            db.addResenha(req.alunoId, req.livro, req.autor, req.paginas, req.nota, req.conteudo, "enviada");
+            ctx.result("resenha enviada");
+        });
+
+        app.get("/resenhas/:alunoId", ctx -> {
+            String alunoId = ctx.pathParam("alunoId");
+            var list = db.getResenhasDoAluno(alunoId);
+            ctx.json(list);
+        });
+
     }
 
     private static class NovoAlunoRequest {
@@ -53,5 +73,14 @@ public class Main {
     private static class LoginRequest {
         String usuario;
         String senha;
+    }
+
+    private static class ResenhaRequest {
+        String alunoId;
+        String livro;
+        String autor;
+        int paginas;
+        int nota;
+        String conteudo;
     }
 }

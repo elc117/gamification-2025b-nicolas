@@ -119,3 +119,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     carregarLeaderboard();
 });
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("usuario");
+    window.location.href = "index.html";
+});

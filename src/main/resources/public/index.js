@@ -1,10 +1,20 @@
 const form = document.querySelector('.login-container form');
 const loading = document.getElementById('loading-overlay');
 const toast = document.getElementById("toast");
+const senhaInput = document.getElementById('senha');
+const toggleSenha = document.getElementById('toggle-senha');
 
 window.addEventListener('pageshow', () => {
     loading.style.display = 'none';
 });
+
+if (toggleSenha && senhaInput) {
+    toggleSenha.addEventListener('click', () => {
+        const type = senhaInput.type === 'password' ? 'text' : 'password';
+        senhaInput.type = type;
+        toggleSenha.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+}
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -20,36 +30,19 @@ form.addEventListener('submit', async (e) => {
     loading.style.display = 'flex';
 
     try {
-        const response = await fetch('/login', {
+        const res = await fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, senha })
-            })
-            .then(async res => {
-            if (res.ok) {
-                const user = await res.json();
-                localStorage.setItem('usuario', JSON.stringify(user));
-                if (user.tipo === 'professor') {
-                window.location.href = 'professor.html';
-                } else {
-                window.location.href = 'aluno.html';
-                }
-            } else {
-                alert('usuário ou senha inválidos');
-            }
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            if (data.tipo === 'professor') {
-                window.location.href = 'professor.html';
-            } else if (data.tipo === 'aluno') {
-                window.location.href = 'aluno.html';
-            } else {
-                showToast('tipo de usuário desconhecido');
-            }
-        } else if (response.status === 401) {
+        if (res.ok) {
+            const user = await res.json();
+            localStorage.setItem('usuario', JSON.stringify(user));
+            window.location.href = user.tipo === 'professor' ? 'professor.html' : 'aluno.html';
+        } else if (res.status === 401) {
             showToast('login e/ou senha errado(s)');
+            senhaInput.value = '';
         } else {
             showToast('erro inesperado no servidor');
         }

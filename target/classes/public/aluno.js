@@ -112,3 +112,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     carregarLeaderboard();
 });
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("usuario");
+    window.location.href = "index.html";
+});
+
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+if (usuario) {
+    document.getElementById('nome-aluno').textContent = usuario.nome;
+
+    document.getElementById('pontos').textContent = usuario.pontos;
+} else {
+    window.location.href = 'index.html';
+}
+
+const enviarBtn = document.getElementById('enviar');
+const estrelas = document.querySelectorAll('.estrela');
+let notaSelecionada = 0;
+
+estrelas.forEach(e => {
+    e.addEventListener('click', () => {
+        notaSelecionada = parseInt(e.dataset.value);
+        estrelas.forEach(s => s.classList.remove('selecionada'));
+        for (let i = 0; i < notaSelecionada; i++) estrelas[i].classList.add('selecionada');
+    });
+});
+
+enviarBtn.addEventListener('click', async () => {
+    const livro = document.getElementById('livro').value.trim();
+    const autor = document.getElementById('autor').value.trim();
+    const paginas = parseInt(document.getElementById('paginas').value);
+    const conteudo = document.getElementById('texto-resenha').value.trim();
+    const aluno = JSON.parse(localStorage.getItem('user'));
+
+    if (!livro || !autor || !paginas || !notaSelecionada || !conteudo) {
+        mostrarToast("Preencha todos os campos!");
+        return;
+    }
+
+    const data = { alunoId: aluno.id, livro, autor, paginas, nota: notaSelecionada, conteudo };
+
+    const resp = await fetch('/resenha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    if (resp.ok) {
+        mostrarToast("resenha enviada com sucesso!");
+        fecharPopup();
+    } else {
+        mostrarToast("erro ao enviar resenha");
+    }
+});

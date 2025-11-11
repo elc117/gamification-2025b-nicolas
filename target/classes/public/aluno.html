@@ -2,15 +2,18 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>dashboard do Aluno</title>
+    <title>dashboard do aluno</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="/mb.png">
 </head>
 <body class="aluno-body">
-    <header>
+    <header id="header">
         <h1>painel do aluno</h1>
         <h1>Mogbook</h1>
-        <div>bem-vindo(a), <strong>aluno(a)</strong></div>
+        <div class="header-right">
+            <div>bem-vindo(a), <strong id="nome-aluno">aluno(a)</strong></div>
+            <button id="logout-btn">sair</button>
+        </div>
     </header>
 
     <div class="main-container">
@@ -33,7 +36,7 @@
         <div>
             <div class="card">
                 <h2>meus pontos</h2>
-                <div class="score" id="pontos">1200</div>
+                <div class="score" id="pontos"></div>
             </div>
             
             <div class="card">
