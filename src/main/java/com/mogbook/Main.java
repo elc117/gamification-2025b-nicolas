@@ -45,7 +45,6 @@ public class Main {
         });
 
         app.post("/resenha", ctx -> {
-            var gson = new Gson();
             var req = gson.fromJson(ctx.body(), ResenhaRequest.class);
 
             if (req.alunoId == null || req.livro == null || req.autor == null || req.paginas == 0 || req.nota == 0 || req.conteudo == null) {
