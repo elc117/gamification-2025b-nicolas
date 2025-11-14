@@ -1,169 +1,96 @@
-const popup = document.getElementById("popup");
-const abrir = document.getElementById("abrir-popup");
-const fechar = document.querySelector(".close");
-const cancelar = document.getElementById("cancelar");
-const enviar = document.getElementById("enviar");
-const toast = document.getElementById("toast");
+/* aluno.js — específico do aluno, usa common.js */
+document.addEventListener("DOMContentLoaded", () => {
+  const popupId = "popup";
+  let textoEditado = false;
 
-let textoEditado = false;
-let nota = 0;
+  // elementos defensivos
+  const abrirBtn = document.getElementById("abrir-popup");
+  const fecharBtn = document.querySelector("#popup .close");
+  const cancelarBtn = document.getElementById("cancelar");
+  const enviarBtn = document.getElementById("enviar");
+  const textoEl = document.getElementById("texto-resenha");
 
-abrir.onclick = () => {
-    popup.style.display = "flex";
-    document.getElementById("texto-resenha").value = "";
-    document.getElementById("livro").value = "";
-    document.getElementById("autor").value = "";
-    document.getElementById("paginas").value = "";
-    nota = 0;
-    preencherEstrelas(nota);
-    textoEditado = false;
-};
+  // autenticação e UI inicial
+  const usuario = getUsuarioFromStorage();
+  if (!usuario) { window.location.href = "index.html"; return; }
 
-fechar.onclick = fecharPopup;
-cancelar.onclick = fecharPopup;
-window.onclick = e => { if (e.target === popup) fecharPopup(); }
+  const nomeEl = document.getElementById("nome-aluno");
+  const pontosEl = document.getElementById("pontos");
+  if (nomeEl) nomeEl.textContent = usuario.nome || "aluno(a)";
+  if (pontosEl) pontosEl.textContent = usuario.pontos ?? 0;
 
-function fecharPopup() {
-    if (textoEditado && !confirm("tem certeza que quer sair sem salvar?")) return;
-    popup.style.display = "none";
-}
+  // leaderboard + logout
+  initLeaderboardIfPresent();
+  initLogout();
 
-document.getElementById("texto-resenha").addEventListener("input", () => {
-    textoEditado = true;
-});
+  // abrir popup — apenas se botão existir
+  if (abrirBtn) {
+    abrirBtn.addEventListener("click", () => {
+      abrirPopupId(popupId);
+      ["livro", "autor", "paginas", "texto-resenha"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      textoEditado = false;
+      // reset estrelas via controle retornado
+      if (estrelasController && typeof estrelasController.setNota === "function") {
+        estrelasController.setNota(0);
+      }
+    });
+  }
 
-const estrelas = document.querySelectorAll('.estrela');
+  // fechar popup handlers
+  if (fecharBtn) fecharBtn.addEventListener("click", () => fecharPopupId(popupId, textoEditado));
+  if (cancelarBtn) cancelarBtn.addEventListener("click", () => fecharPopupId(popupId, textoEditado));
+  window.addEventListener("click", e => { if (e.target && e.target.id === popupId) fecharPopupId(popupId, textoEditado); });
 
-estrelas.forEach(e => {
-    e.addEventListener('mouseover', () => preencherEstrelas(e.dataset.value));
-    e.addEventListener('click', () => { nota = e.dataset.value; preencherEstrelas(nota); });
-    e.addEventListener('mouseout', () => preencherEstrelas(nota));
-});
+  if (textoEl) {
+    textoEl.addEventListener("input", () => { textoEditado = true; });
+  }
 
-function preencherEstrelas(valor) {
-    estrelas.forEach(e => e.classList.toggle('ativa', e.dataset.value <= valor));
-}
+  // estrelas: inicializa no container exato (garante que só afete as do aluno)
+  const estrelasContainer = document.querySelector("#popup .estrelas");
+  let notaSelecionada = 0;
+  let estrelasController = null;
+  if (estrelasContainer) {
+    estrelasController = initEstrelas(estrelasContainer, v => { notaSelecionada = Number(v) || 0; });
+  }
 
-function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
+  // enviar resenha
+  if (enviarBtn) {
+    enviarBtn.addEventListener("click", async () => {
+      const livro = (document.getElementById('livro')?.value || "").trim();
+      const autor = (document.getElementById('autor')?.value || "").trim();
+      const paginasRaw = (document.getElementById('paginas')?.value || "").trim();
+      const paginas = paginasRaw ? parseInt(paginasRaw, 10) : NaN;
+      const conteudo = (document.getElementById('texto-resenha')?.value || "").trim();
 
-function validarCampos() {
-    const livro = document.getElementById("livro").value.trim();
-    const autor = document.getElementById("autor").value.trim();
-    const paginas = document.getElementById("paginas").value.trim();
-    const resenha = document.getElementById("texto-resenha").value.trim();
-    if (!livro || !autor || !paginas || !resenha || nota == 0) return false;
-    return true;
-}
-
-enviar.onclick = () => {
-    if (!validarCampos()) {
-        showToast("Preencha todos os campos!");
+      if (!livro || !autor || !paginas || !notaSelecionada || !conteudo) {
+        toast("preencha todos os campos!");
         return;
-    }
+      }
 
-    const livro = document.getElementById("livro").value.trim();
-    const autor = document.getElementById("autor").value.trim();
-    const paginas = document.getElementById("paginas").value.trim();
-    const resenha = document.getElementById("texto-resenha").value.trim();
+      const data = {
+        alunoId: usuario.id,
+        livro, autor, paginas, nota: notaSelecionada, conteudo
+      };
 
-    alert(`resenha enviada (simulação)\n\nLivro: ${livro}\nAutor: ${autor}\nPáginas: ${paginas}\nNota: ${nota} estrelas\n\n${resenha}`);
-    popup.style.display = "none";
-};
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const lista = document.getElementById('lista-leaderboard');
-    const toggleBtn = document.getElementById('toggle-btn');
-    let expanded = false;
-    let alunos = [];
-
-    const user = JSON.parse(localStorage.getItem('usuario'));
-    if (user) {
-        document.querySelector('header div strong').textContent = user.nome;
-    } else {
-        window.location.href = 'index.html';
-    }
-
-    async function carregarLeaderboard() {
-    const res = await fetch('/leaderboard');
-    alunos = await res.json();
-    renderizar();
-    }
-
-    function renderizar() {
-    lista.innerHTML = '';
-    const limite = expanded ? alunos.length : Math.min(10, alunos.length);
-    alunos.slice(0, limite).forEach((a, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
-        lista.appendChild(li);
+      try {
+        const resp = await fetch('/resenha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (resp.ok) {
+          toast("resenha enviada com sucesso!");
+          fecharPopupId(popupId, false);
+        } else {
+          toast("erro ao enviar resenha");
+        }
+      } catch (err) {
+        console.error(err);
+        toast("erro ao enviar resenha");
+      }
     });
-    toggleBtn.style.display = alunos.length > 10 ? 'block' : 'none';
-    toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
-    }
-
-    toggleBtn.addEventListener('click', () => {
-    expanded = !expanded;
-    renderizar();
-    });
-
-    carregarLeaderboard();
-});
-
-document.getElementById("logout-btn").addEventListener("click", () => {
-    localStorage.removeItem("usuario");
-    window.location.href = "index.html";
-});
-
-const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-if (usuario) {
-    document.getElementById('nome-aluno').textContent = usuario.nome;
-
-    document.getElementById('pontos').textContent = usuario.pontos;
-} else {
-    window.location.href = 'index.html';
-}
-
-const enviarBtn = document.getElementById('enviar');
-const estrelas = document.querySelectorAll('.estrela');
-let notaSelecionada = 0;
-
-estrelas.forEach(e => {
-    e.addEventListener('click', () => {
-        notaSelecionada = parseInt(e.dataset.value);
-        estrelas.forEach(s => s.classList.remove('selecionada'));
-        for (let i = 0; i < notaSelecionada; i++) estrelas[i].classList.add('selecionada');
-    });
-});
-
-enviarBtn.addEventListener('click', async () => {
-    const livro = document.getElementById('livro').value.trim();
-    const autor = document.getElementById('autor').value.trim();
-    const paginas = parseInt(document.getElementById('paginas').value);
-    const conteudo = document.getElementById('texto-resenha').value.trim();
-    const aluno = JSON.parse(localStorage.getItem('user'));
-
-    if (!livro || !autor || !paginas || !notaSelecionada || !conteudo) {
-        mostrarToast("Preencha todos os campos!");
-        return;
-    }
-
-    const data = { alunoId: aluno.id, livro, autor, paginas, nota: notaSelecionada, conteudo };
-
-    const resp = await fetch('/resenha', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-
-    if (resp.ok) {
-        mostrarToast("resenha enviada com sucesso!");
-        fecharPopup();
-    } else {
-        mostrarToast("erro ao enviar resenha");
-    }
+  }
 });

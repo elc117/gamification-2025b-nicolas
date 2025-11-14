@@ -1,0 +1,9 @@
+.prof-body {
+    background: linear-gradient(135deg, #c2d8f3, #f5c7c7, #fef3b7);
+}
+
+.resenha-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
