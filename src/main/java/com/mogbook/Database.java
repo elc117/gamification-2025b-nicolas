@@ -2,9 +2,7 @@ package com.mogbook;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class Database {
@@ -25,6 +23,9 @@ public class Database {
         return DriverManager.getConnection(url);
     }
 
+    // =========================
+    //       CRIA TABELAS
+    // =========================
     public void createTables() {
         String sqlUsuarios = """
             CREATE TABLE IF NOT EXISTS usuarios (
@@ -45,7 +46,8 @@ public class Database {
                 paginas INTEGER,
                 nota INTEGER CHECK(nota BETWEEN 1 AND 5),
                 conteudo TEXT,
-                status TEXT CHECK(status IN ('em andamento', 'enviada', 'corrigida')) DEFAULT 'em andamento',
+                status TEXT CHECK(status IN ('Pendente', 'Corrigida')) DEFAULT 'Pendente',
+                comentario TEXT,
                 FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
             );
         """;
@@ -55,6 +57,7 @@ public class Database {
             stmt.execute(sqlResenhas);
             System.out.println("tabelas criadas/verificadas");
 
+            // cria professor padrão caso não tenha nenhum
             String check = "SELECT COUNT(*) FROM usuarios WHERE tipo = 'professor'";
             ResultSet rs = stmt.executeQuery(check);
             if (rs.next() && rs.getInt(1) == 0) {
@@ -65,6 +68,10 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    // =========================
+    //        USUÁRIOS
+    // =========================
 
     public void addUser(String nome, String senha, String tipo, Integer pontos) {
         String newId = gerarNovoId();
@@ -111,7 +118,7 @@ public class Database {
                 int lastId = Integer.parseInt(rs.getString("id"));
                 return String.format("%03d", lastId + 1);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "000";
@@ -130,7 +137,7 @@ public class Database {
 
     public List<User> getTopAlunos(int limit) {
         List<User> lista = new ArrayList<>();
-        String sql = "SELECT nome, pontos FROM usuarios WHERE tipo = 'aluno' ORDER BY pontos DESC LIMIT ?";
+        String sql = "SELECT * FROM usuarios WHERE tipo = 'aluno' ORDER BY pontos DESC LIMIT ?";
 
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -138,7 +145,13 @@ public class Database {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                User u = new User(null, rs.getString("nome"), "", "aluno", rs.getInt("pontos"));
+                User u = new User(
+                        rs.getString("id"),
+                        rs.getString("nome"),
+                        rs.getString("senha"),
+                        rs.getString("tipo"),
+                        rs.getInt("pontos")
+                );
                 lista.add(u);
             }
         } catch (SQLException e) {
@@ -147,9 +160,15 @@ public class Database {
         return lista;
     }
 
+
+    // =========================
+    //         RESENHAS
+    // =========================
+
     public void addResenha(String alunoId, String livro, String autor, int paginas, int nota, String conteudo, String status) {
         String sql = "INSERT INTO resenhas (id, aluno_id, livro, autor, paginas, nota, conteudo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             String id = UUID.randomUUID().toString();
             stmt.setString(1, id);
             stmt.setString(2, alunoId);
@@ -159,32 +178,92 @@ public class Database {
             stmt.setInt(6, nota);
             stmt.setString(7, conteudo);
             stmt.setString(8, status);
+
             stmt.executeUpdate();
+            System.out.println("resenha criada: " + id);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<Map<String, Object>> getResenhasDoAluno(String alunoId) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT * FROM resenhas WHERE aluno_id = ? ORDER BY rowid DESC";
+    public Resenha getResenhaById(String id) {
+        String sql = "SELECT * FROM resenhas WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, alunoId);
+            stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Map<String, Object> res = new HashMap<>();
-                res.put("id", rs.getString("id"));
-                res.put("livro", rs.getString("livro"));
-                res.put("autor", rs.getString("autor"));
-                res.put("paginas", rs.getInt("paginas"));
-                res.put("nota", rs.getInt("nota"));
-                res.put("conteudo", rs.getString("conteudo"));
-                res.put("status", rs.getString("status"));
-                list.add(res);
+            if (rs.next()) {
+                return new Resenha(
+                        rs.getString("id"),
+                        rs.getString("livro"),
+                        rs.getString("autor"),
+                        rs.getInt("nota"),
+                        rs.getInt("paginas"),
+                        rs.getString("conteudo"),
+                        rs.getString("status"),
+                        rs.getString("aluno_id")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public List<Resenha> getResenhasDoAluno(String alunoId) {
+        List<Resenha> list = new ArrayList<>();
+        String sql = "SELECT * FROM resenhas WHERE aluno_id = ? ORDER BY rowid DESC";
+
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, alunoId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Resenha r = new Resenha(
+                        rs.getString("id"),
+                        rs.getString("livro"),
+                        rs.getString("autor"),
+                        rs.getInt("nota"),
+                        rs.getInt("paginas"),
+                        rs.getString("conteudo"),
+                        rs.getString("status"),
+                        alunoId
+                );
+                list.add(r);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public List<Resenha> getResenhasParaCorrecao() {
+        List<Resenha> list = new ArrayList<>();
+        String sql = "SELECT * FROM resenhas WHERE status = 'Pendente'";
+
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Resenha r = new Resenha(
+                        rs.getString("id"),
+                        rs.getString("livro"),
+                        rs.getString("autor"),
+                        rs.getInt("nota"),
+                        rs.getInt("paginas"),
+                        rs.getString("conteudo"),
+                        rs.getString("status"),
+                        rs.getString("aluno_id")
+                );
+                list.add(r);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 
@@ -199,25 +278,52 @@ public class Database {
         }
     }
 
-    public List<Map<String, Object>> getResenhasParaCorrecao() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        String sql = "SELECT * FROM resenhas WHERE status = 'enviada'";
-        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                Map<String, Object> res = new HashMap<>();
-                res.put("id", rs.getString("id"));
-                res.put("aluno_id", rs.getString("aluno_id"));
-                res.put("livro", rs.getString("livro"));
-                res.put("autor", rs.getString("autor"));
-                res.put("nota", rs.getInt("nota"));
-                res.put("conteudo", rs.getString("conteudo"));
-                res.put("status", rs.getString("status"));
-                list.add(res);
-            }
+    public void marcarCorrigida(String id, String comentario) {
+        String sql = "UPDATE resenhas SET status = 'Corrigida', comentario = ? WHERE id = ?";
+
+        try (Connection conn = connect();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, comentario);
+            stmt.setString(2, id);
+            stmt.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Resenha> getResenhasPendentes() {
+        List<Resenha> list = new ArrayList<>();
+        String sql = """
+            SELECT r.id, r.livro, r.autor, r.paginas, r.nota, r.conteudo, r.status, r.aluno_id
+            FROM resenhas r
+            WHERE r.status = 'Pendente'
+            ORDER BY r.rowid DESC
+        """;
+
+
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            Resenha r = new Resenha(
+                rs.getString("id"),
+                rs.getString("livro"),
+                rs.getString("autor"),
+                rs.getInt("nota"),
+                rs.getInt("paginas"),
+                rs.getString("conteudo"),
+                rs.getString("status"),
+                rs.getString("aluno_id")
+            );
+            list.add(r);
+        }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 

@@ -81,6 +81,66 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+
+async function carregarResenhasPendentes() {
+    console.log("DOM carregado");
+    const res = await fetch('/resenhas/pendentes');
+    const resenhas = await res.json();
+
+    const container = document.getElementById('pendentes');
+    container.innerHTML = '';
+
+    resenhas.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'resenha-item';
+        div.innerHTML = `
+            <p>${r.livro} — ${r.autor}</p>
+            <button class="corrigir" data-id="${r.id}" data-livro="${r.livro}" data-autor="${r.autor}">corrigir</button>
+        `;
+        container.appendChild(div);
+    });
+
+    container.querySelectorAll('.corrigir').forEach(btn => {
+        btn.onclick = () => {
+            const livro = btn.dataset.livro;
+            const autor = btn.dataset.autor;
+            const id = btn.dataset.id;
+
+            infoResenha.innerText = `${livro} — ${autor}`;
+            popup.style.display = "flex";
+            document.getElementById("comentario").value = "";
+            textoEditado = false;
+
+            enviar.onclick = async () => {
+                const comentario = document.getElementById("comentario").value.trim();
+                if (!comentario) { 
+                    alert("escreva algo antes de enviar"); 
+                    return; 
+                }
+
+                try {
+                    const resp = await fetch(`/resenhas/${id}/corrigir`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ comentario })
+                    });
+
+                    if (resp.ok) {
+                        alert("resenha corrigida com sucesso!");
+                        popup.style.display = "none";
+                        carregarResenhasPendentes(); // atualiza a lista
+                    } else {
+                        alert("erro ao corrigir resenha");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("erro de conexão");
+                }
+            };
+        };
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const lista = document.getElementById('lista-leaderboard');
     const toggleBtn = document.getElementById('toggle-btn');
@@ -95,30 +155,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function carregarLeaderboard() {
-    const res = await fetch('/leaderboard');
-    alunos = await res.json();
-    renderizar();
+        const res = await fetch('/leaderboard');
+        alunos = await res.json();
+        renderizar();
     }
 
     function renderizar() {
-    lista.innerHTML = '';
-    const limite = expanded ? alunos.length : Math.min(10, alunos.length);
-    alunos.slice(0, limite).forEach((a, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
-        lista.appendChild(li);
-    });
-    toggleBtn.style.display = alunos.length > 10 ? 'block' : 'none';
-    toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
+        lista.innerHTML = '';
+        const limite = expanded ? alunos.length : Math.min(10, alunos.length);
+        alunos.slice(0, limite).forEach((a, i) => {
+            const li = document.createElement('li');
+            li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
+            lista.appendChild(li);
+        });
+        if(alunos.length > 10){
+            toggleBtn.style.display = 'block';
+        }
+        else {
+            toggleBtn.style.display = 'none';
+        }
+        toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
     }
 
     toggleBtn.addEventListener('click', () => {
-    expanded = !expanded;
-    renderizar();
+        expanded = !expanded;
+        renderizar();
     });
 
+    // chama as funções quando a página carrega
     carregarLeaderboard();
+    carregarResenhasPendentes(); // <-- chama aqui
 });
+
 
 document.getElementById("logout-btn").addEventListener("click", () => {
     localStorage.removeItem("usuario");

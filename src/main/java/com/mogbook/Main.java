@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         Database db = new Database("mogbook.db");
         db.createTables();
-        
+
         if (db.isEmpty()) {
             db.addUser("professor", "1234", "professor", 0);
         }
@@ -22,6 +22,7 @@ public class Main {
 
         Gson gson = new Gson();
 
+        // LOGIN
         app.post("/login", ctx -> {
             var req = gson.fromJson(ctx.body(), LoginRequest.class);
             User user = db.getUserByName(req.usuario);
@@ -33,17 +34,20 @@ public class Main {
             }
         });
 
+        // CADASTRAR ALUNO
         app.post("/cadastro-aluno", ctx -> {
             var req = gson.fromJson(ctx.body(), NovoAlunoRequest.class);
             db.addUser(req.nome, req.senha, "aluno", 0);
             ctx.result("aluno cadastrado");
         });
 
+        // LEADERBOARD
         app.get("/leaderboard", ctx -> {
             var alunos = db.getTopAlunos(10);
             ctx.json(alunos);
         });
 
+        // CRIAR RESENHA
         app.post("/resenha", ctx -> {
             var req = gson.fromJson(ctx.body(), ResenhaRequest.class);
 
@@ -52,16 +56,29 @@ public class Main {
                 return;
             }
 
-            db.addResenha(req.alunoId, req.livro, req.autor, req.paginas, req.nota, req.conteudo, "enviada");
+            db.addResenha(req.alunoId, req.livro, req.autor, req.paginas, req.nota, req.conteudo, "Pendente");
             ctx.result("resenha enviada");
         });
 
-        app.get("/resenhas/:alunoId", ctx -> {
+        app.get("/resenhas/{alunoId}", ctx -> {
             String alunoId = ctx.pathParam("alunoId");
             var list = db.getResenhasDoAluno(alunoId);
             ctx.json(list);
         });
 
+        app.get("/resenhas/pendentes", ctx -> {
+            System.out.println("endpoint /resenhas/pendentes chamado");
+            var pendentes = db.getResenhasPendentes();
+            ctx.json(pendentes);
+        });
+
+        app.post("/resenhas/{id}/corrigir", ctx -> {
+            String id = ctx.pathParam("id");
+            var req = gson.fromJson(ctx.body(), CorrigirRequest.class);
+
+            db.marcarCorrigida(id, req.comentario);
+            ctx.result("resenha corrigida");
+        });
     }
 
     private static class NovoAlunoRequest {
@@ -81,5 +98,9 @@ public class Main {
         int paginas;
         int nota;
         String conteudo;
+    }
+
+    private static class CorrigirRequest {
+        String comentario;
     }
 }

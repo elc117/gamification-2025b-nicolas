@@ -1,7 +1,7 @@
-/* aluno.js — específico do aluno, usa common.js */
 document.addEventListener("DOMContentLoaded", () => {
   const popupId = "popup";
   let textoEditado = false;
+  let notaSelecionada = 0;
 
   // elementos defensivos
   const abrirBtn = document.getElementById("abrir-popup");
@@ -23,6 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initLeaderboardIfPresent();
   initLogout();
 
+  // inicializa estrelas
+  const estrelasController = initEstrelas(".estrelas", v => { notaSelecionada = v; });
+
   // abrir popup — apenas se botão existir
   if (abrirBtn) {
     abrirBtn.addEventListener("click", () => {
@@ -32,10 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (el) el.value = "";
       });
       textoEditado = false;
-      // reset estrelas via controle retornado
-      if (estrelasController && typeof estrelasController.setNota === "function") {
-        estrelasController.setNota(0);
-      }
+      notaSelecionada = 0;
+      if (estrelasController) estrelasController.setNota(0);
     });
   }
 
@@ -48,12 +49,41 @@ document.addEventListener("DOMContentLoaded", () => {
     textoEl.addEventListener("input", () => { textoEditado = true; });
   }
 
-  // estrelas: inicializa no container exato (garante que só afete as do aluno)
-  const estrelasContainer = document.querySelector("#popup .estrelas");
-  let notaSelecionada = 0;
-  let estrelasController = null;
-  if (estrelasContainer) {
-    estrelasController = initEstrelas(estrelasContainer, v => { notaSelecionada = Number(v) || 0; });
+  function initEstrelas(selectorOrElement, callback = () => {}) {
+    let container;
+    if (typeof selectorOrElement === "string") container = document.querySelector(selectorOrElement);
+    else container = selectorOrElement;
+    if (!container) return { getNota: () => 0, setNota: () => {} };
+
+    const estrelas = Array.from(container.querySelectorAll(".estrela"));
+    let nota = 0;
+
+    function preencher(v) {
+      const num = Number(v) || 0;
+      estrelas.forEach(e => {
+        const val = Number(e.dataset.value) || 0;
+        if (val <= num) e.classList.add("ativa");
+        else e.classList.remove("ativa");
+      });
+    }
+
+    estrelas.forEach(e => {
+      e.addEventListener("mouseover", () => preencher(e.dataset.value));
+      e.addEventListener("mouseout", () => preencher(nota));
+      e.addEventListener("click", () => {
+        nota = Number(e.dataset.value) || 0;
+        preencher(nota);
+        callback(nota);
+      });
+    });
+
+    return {
+      getNota: () => nota,
+      setNota: v => { 
+        nota = Number(v) || 0; 
+        preencher(nota); 
+      }
+    };
   }
 
   // enviar resenha

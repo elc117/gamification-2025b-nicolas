@@ -19,6 +19,6 @@
     transition: color 0.2s;
 }
 
-.estrela.selecionada {
+.estrela.ativa {
     color: gold;
 }

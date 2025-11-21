@@ -22,39 +22,6 @@ function fecharPopupId(popupId, textoEditado = false) {
   p.style.display = "none";
 }
 
-function initEstrelas(selectorOrElement, callback = () => {}) {
-  let container;
-  if (typeof selectorOrElement === "string") container = document.querySelector(selectorOrElement);
-  else container = selectorOrElement;
-  if (!container) return { getNota: () => 0, setNota: () => {} };
-
-  const estrelas = Array.from(container.querySelectorAll(".estrela"));
-  let nota = 0;
-
-  function preencher(v) {
-    const num = Number(v) || 0;
-    estrelas.forEach(e => {
-      const val = Number(e.dataset.value) || 0;
-      e.classList.toggle("ativa", val <= num);
-    });
-  }
-
-  estrelas.forEach(e => {
-    e.addEventListener("mouseover", () => preencher(e.dataset.value));
-    e.addEventListener("mouseout", () => preencher(nota));
-    e.addEventListener("click", () => {
-      nota = Number(e.dataset.value) || 0;
-      preencher(nota);
-      callback(nota);
-    });
-  });
-
-  return {
-    getNota: () => nota,
-    setNota: v => { nota = Number(v) || 0; preencher(nota); }
-  };
-}
-
 function initLogout() {
   const btn = document.getElementById("logout-btn");
   if (!btn) return;

@@ -20,4 +20,6 @@ public class User {
     public String getSenha() { return senha; }
     public String getTipo() { return tipo; }
     public Integer getPontos() { return pontos; }
+
+    public void setPontos(Integer pontos) { this.pontos = pontos; }
 }
