@@ -239,34 +239,6 @@ public class Database {
         return list;
     }
 
-    public List<Resenha> getResenhasParaCorrecao() {
-        List<Resenha> list = new ArrayList<>();
-        String sql = "SELECT * FROM resenhas WHERE status = 'Pendente'";
-
-        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                Resenha r = new Resenha(
-                        rs.getString("id"),
-                        rs.getString("livro"),
-                        rs.getString("autor"),
-                        rs.getInt("nota"),
-                        rs.getInt("paginas"),
-                        rs.getString("conteudo"),
-                        rs.getString("status"),
-                        rs.getString("aluno_id")
-                );
-                list.add(r);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
     public void updateStatus(String id, String status) {
         String sql = "UPDATE resenhas SET status = ? WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -294,37 +266,37 @@ public class Database {
     }
 
     public List<Resenha> getResenhasPendentes() {
+        System.out.println("buscando pendentes no banco: " + url);
         List<Resenha> list = new ArrayList<>();
         String sql = """
-            SELECT r.id, r.livro, r.autor, r.paginas, r.nota, r.conteudo, r.status, r.aluno_id
-            FROM resenhas r
-            WHERE r.status = 'Pendente'
-            ORDER BY r.rowid DESC
+            SELECT id, livro, autor, paginas, nota, conteudo, status, aluno_id
+            FROM resenhas
+            WHERE TRIM(status) = 'Pendente'
         """;
 
+        try (Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
 
-        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
-
-        while (rs.next()) {
-            Resenha r = new Resenha(
-                rs.getString("id"),
-                rs.getString("livro"),
-                rs.getString("autor"),
-                rs.getInt("nota"),
-                rs.getInt("paginas"),
-                rs.getString("conteudo"),
-                rs.getString("status"),
-                rs.getString("aluno_id")
-            );
-            list.add(r);
-        }
+            while (rs.next()) {
+                System.out.println("achei pendente: id=" + rs.getString("id"));
+                list.add(new Resenha(
+                    rs.getString("id"),
+                    rs.getString("livro"),
+                    rs.getString("autor"),
+                    rs.getInt("nota"),
+                    rs.getInt("paginas"),
+                    rs.getString("conteudo"),
+                    rs.getString("status"),
+                    rs.getString("aluno_id")
+                ));
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return list;
-    }
+}
 
 }

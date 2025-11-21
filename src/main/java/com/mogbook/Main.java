@@ -2,11 +2,15 @@ package com.mogbook;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+
+import java.io.File;
+
 import com.google.gson.Gson;
 
 public class Main {
     public static void main(String[] args) {
         Database db = new Database("mogbook.db");
+
         db.createTables();
 
         if (db.isEmpty()) {
@@ -60,16 +64,17 @@ public class Main {
             ctx.result("resenha enviada");
         });
 
-        app.get("/resenhas/{alunoId}", ctx -> {
-            String alunoId = ctx.pathParam("alunoId");
-            var list = db.getResenhasDoAluno(alunoId);
-            ctx.json(list);
-        });
-
         app.get("/resenhas/pendentes", ctx -> {
             System.out.println("endpoint /resenhas/pendentes chamado");
             var pendentes = db.getResenhasPendentes();
             ctx.json(pendentes);
+        });
+
+        app.get("/resenhas/{alunoId}", ctx -> {
+            System.out.println("endpoint /resenhas/alunoID chamado");
+            String alunoId = ctx.pathParam("alunoId");
+            var list = db.getResenhasDoAluno(alunoId);
+            ctx.json(list);
         });
 
         app.post("/resenhas/{id}/corrigir", ctx -> {

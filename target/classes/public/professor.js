@@ -94,8 +94,8 @@ async function carregarResenhasPendentes() {
         const div = document.createElement('div');
         div.className = 'resenha-item';
         div.innerHTML = `
-            <p>${r.livro} — ${r.autor}</p>
-            <button class="corrigir" data-id="${r.id}" data-livro="${r.livro}" data-autor="${r.autor}">corrigir</button>
+            <p>${r.nomeLivro} — ${r.autor}</p>
+            <button class="corrigir" data-id="${r.id}" data-livro="${r.nomeLivro}" data-autor="${r.autor}">corrigir</button>
         `;
         container.appendChild(div);
     });
