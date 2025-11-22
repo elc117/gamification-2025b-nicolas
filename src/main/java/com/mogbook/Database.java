@@ -48,6 +48,7 @@ public class Database {
                 conteudo TEXT,
                 status TEXT CHECK(status IN ('Pendente', 'Corrigida')) DEFAULT 'Pendente',
                 comentario TEXT,
+                nota_professor INTEGER,
                 FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
             );
         """;
@@ -250,14 +251,15 @@ public class Database {
         }
     }
 
-    public void marcarCorrigida(String id, String comentario) {
-        String sql = "UPDATE resenhas SET status = 'Corrigida', comentario = ? WHERE id = ?";
+    public void marcarCorrigida(String id, String comentario, int notaProfessor) {
+        String sql = "UPDATE resenhas SET status = 'Corrigida', comentario = ?, nota_professor = ? WHERE id = ?";
 
         try (Connection conn = connect();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, comentario);
-            stmt.setString(2, id);
+            stmt.setInt(2, notaProfessor);
+            stmt.setString(3, id);
             stmt.executeUpdate();
 
         } catch (SQLException e) {

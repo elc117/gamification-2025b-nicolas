@@ -141,52 +141,97 @@ async function carregarResenhasPendentes() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const lista = document.getElementById('lista-leaderboard');
-    const toggleBtn = document.getElementById('toggle-btn');
-    let expanded = false;
-    let alunos = [];
+document.addEventListener('DOMContentLoaded', () => {
+    const popup = document.getElementById("popup");
+    const fechar = document.querySelector(".close");
+    const cancelar = document.getElementById("cancelar");
+    const enviar = document.getElementById("enviar");
+    const infoResenha = document.getElementById("info-resenha");
+    const comentarioEl = document.getElementById("comentario");
+    let textoEditado = false;
+    let notaSelecionada = 0;
 
-    const user = JSON.parse(localStorage.getItem('usuario'));
-    if (user) {
-        document.querySelector('header div strong').textContent = user.nome;
-    } else {
-        window.location.href = 'index.html';
-    }
+    // inicializa estrelas
+    const estrelasController = initEstrelas("#popup .estrelas", v => notaSelecionada = v);
 
-    async function carregarLeaderboard() {
-        const res = await fetch('/leaderboard');
-        alunos = await res.json();
-        renderizar();
-    }
+    function initEstrelas(selector, callback = () => {}) {
+        const container = document.querySelector(selector);
+        if (!container) return { getNota: () => 0, setNota: () => {} };
+        const estrelas = Array.from(container.querySelectorAll(".estrela"));
+        let nota = 0;
 
-    function renderizar() {
-        lista.innerHTML = '';
-        const limite = expanded ? alunos.length : Math.min(10, alunos.length);
-        alunos.slice(0, limite).forEach((a, i) => {
-            const li = document.createElement('li');
-            li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
-            lista.appendChild(li);
+        function preencher(v) {
+            estrelas.forEach(e => e.classList.toggle("ativa", Number(e.dataset.value) <= Number(v)));
+        }
+
+        estrelas.forEach(e => {
+            e.addEventListener("mouseover", () => preencher(e.dataset.value));
+            e.addEventListener("mouseout", () => preencher(nota));
+            e.addEventListener("click", () => { nota = Number(e.dataset.value); preencher(nota); callback(nota); });
         });
-        if(alunos.length > 10){
-            toggleBtn.style.display = 'block';
-        }
-        else {
-            toggleBtn.style.display = 'none';
-        }
-        toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
+
+        return { getNota: () => nota, setNota: v => { nota = v; preencher(nota); } };
     }
 
-    toggleBtn.addEventListener('click', () => {
-        expanded = !expanded;
-        renderizar();
-    });
+    function tentarFechar() {
+        if (textoEditado && !confirm("tem certeza que quer sair sem salvar?")) return;
+        popup.style.display = "none";
+    }
 
-    // chama as funções quando a página carrega
-    carregarLeaderboard();
-    carregarResenhasPendentes(); // <-- chama aqui
+    fechar.onclick = tentarFechar;
+    cancelar.onclick = tentarFechar;
+    window.onclick = e => { if (e.target === popup) tentarFechar(); };
+
+    comentarioEl.addEventListener("input", () => { textoEditado = true; });
+
+    async function carregarResenhasPendentes() {
+        const res = await fetch('/resenhas/pendentes');
+        const resenhas = await res.json();
+        const container = document.getElementById('pendentes');
+        container.innerHTML = '';
+
+        resenhas.forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'resenha-item';
+            div.innerHTML = `
+                <p>${r.nomeLivro} — ${r.autor}</p>
+                <button class="corrigir" data-id="${r.id}" data-livro="${r.nomeLivro}" data-autor="${r.autor}">corrigir</button>
+            `;
+            container.appendChild(div);
+        });
+
+        container.querySelectorAll('.corrigir').forEach(btn => {
+            btn.onclick = () => {
+                const id = btn.dataset.id;
+                infoResenha.textContent = `${btn.dataset.livro} — ${btn.dataset.autor}`;
+                popup.style.display = "flex";
+                comentarioEl.value = "";
+                estrelasController.setNota(0);
+                notaSelecionada = 0;
+                textoEditado = false;
+
+                enviar.onclick = async () => {
+                    const comentario = comentarioEl.value.trim();
+                    if (!comentario || !notaSelecionada) { alert("preencha comentário e nota"); return; }
+                    try {
+                        const resp = await fetch(`/resenhas/${id}/corrigir`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ comentario, notaProfessor: notaSelecionada })
+                        });
+                        if (resp.ok) {
+                            alert("resenha corrigida!");
+                            popup.style.display = "none";
+                            carregarResenhasPendentes();
+                        } else alert("erro ao corrigir");
+                    } catch(e) { console.error(e); alert("erro de conexão"); }
+                };
+            };
+        });
+    }
+
+    carregarResenhasPendentes();
 });
-
 
 document.getElementById("logout-btn").addEventListener("click", () => {
     localStorage.removeItem("usuario");

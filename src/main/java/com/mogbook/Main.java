@@ -81,7 +81,7 @@ public class Main {
             String id = ctx.pathParam("id");
             var req = gson.fromJson(ctx.body(), CorrigirRequest.class);
 
-            db.marcarCorrigida(id, req.comentario);
+            db.marcarCorrigida(id, req.comentario, req.notaProfessor);
             ctx.result("resenha corrigida");
         });
     }
@@ -107,5 +107,6 @@ public class Main {
 
     private static class CorrigirRequest {
         String comentario;
+        int notaProfessor;
     }
 }

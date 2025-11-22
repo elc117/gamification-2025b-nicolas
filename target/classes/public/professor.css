@@ -7,3 +7,19 @@
     justify-content: space-between;
     margin-bottom: 10px;
 }
+
+.estrelas {
+    display: flex;
+    gap: 5px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.estrela {
+    color: #555;
+    transition: color 0.2s;
+}
+
+.estrela.ativa {
+    color: gold;
+}
