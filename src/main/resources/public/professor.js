@@ -81,66 +81,6 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-
-async function carregarResenhasPendentes() {
-    console.log("DOM carregado");
-    const res = await fetch('/resenhas/pendentes');
-    const resenhas = await res.json();
-
-    const container = document.getElementById('pendentes');
-    container.innerHTML = '';
-
-    resenhas.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'resenha-item';
-        div.innerHTML = `
-            <p>${r.nomeLivro} — ${r.autor}</p>
-            <button class="corrigir" data-id="${r.id}" data-livro="${r.nomeLivro}" data-autor="${r.autor}">corrigir</button>
-        `;
-        container.appendChild(div);
-    });
-
-    container.querySelectorAll('.corrigir').forEach(btn => {
-        btn.onclick = () => {
-            const livro = btn.dataset.livro;
-            const autor = btn.dataset.autor;
-            const id = btn.dataset.id;
-
-            infoResenha.innerText = `${livro} — ${autor}`;
-            popup.style.display = "flex";
-            document.getElementById("comentario").value = "";
-            textoEditado = false;
-
-            enviar.onclick = async () => {
-                const comentario = document.getElementById("comentario").value.trim();
-                if (!comentario) { 
-                    alert("escreva algo antes de enviar"); 
-                    return; 
-                }
-
-                try {
-                    const resp = await fetch(`/resenhas/${id}/corrigir`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ comentario })
-                    });
-
-                    if (resp.ok) {
-                        alert("resenha corrigida com sucesso!");
-                        popup.style.display = "none";
-                        carregarResenhasPendentes(); // atualiza a lista
-                    } else {
-                        alert("erro ao corrigir resenha");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("erro de conexão");
-                }
-            };
-        };
-    });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const popup = document.getElementById("popup");
     const fechar = document.querySelector(".close");
@@ -195,7 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'resenha-item';
             div.innerHTML = `
                 <p>${r.nomeLivro} — ${r.autor}</p>
-                <button class="corrigir" data-id="${r.id}" data-livro="${r.nomeLivro}" data-autor="${r.autor}">corrigir</button>
+                <button class="corrigir"
+                    data-id="${r.id}"
+                    data-livro="${r.nomeLivro}"
+                    data-autor="${r.autor}"
+                    data-aluno="${r.aluno}"
+                    data-aluno-id="${r.alunoId}"
+                    data-nota="${r.nota}"
+                    data-paginas="${r.paginas}"
+                    data-conteudo="${encodeURIComponent(r.conteudo)}"
+                >corrigir</button>
             `;
             container.appendChild(div);
         });
@@ -203,7 +152,17 @@ document.addEventListener('DOMContentLoaded', () => {
         container.querySelectorAll('.corrigir').forEach(btn => {
             btn.onclick = () => {
                 const id = btn.dataset.id;
-                infoResenha.textContent = `${btn.dataset.livro} — ${btn.dataset.autor}`;
+
+                infoResenha.innerHTML = `
+                    <strong>livro:</strong> ${btn.dataset.livro}<br>
+                    <strong>autor:</strong> ${btn.dataset.autor}<br>
+                    <strong>aluno:</strong> ${btn.dataset.aluno}<br>
+                    <strong>id do aluno:</strong> ${btn.dataset.alunoId}<br>
+                    <strong>nota do aluno:</strong> ${btn.dataset.nota}<br>
+                    <strong>páginas:</strong> ${btn.dataset.paginas}<br>
+                    <strong>conteúdo:</strong><br>${decodeURIComponent(btn.dataset.conteudo)}
+                `;
+
                 popup.style.display = "flex";
                 comentarioEl.value = "";
                 estrelasController.setNota(0);

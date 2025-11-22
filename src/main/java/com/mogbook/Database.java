@@ -271,9 +271,11 @@ public class Database {
         System.out.println("buscando pendentes no banco: " + url);
         List<Resenha> list = new ArrayList<>();
         String sql = """
-            SELECT id, livro, autor, paginas, nota, conteudo, status, aluno_id
-            FROM resenhas
-            WHERE TRIM(status) = 'Pendente'
+            SELECT r.id, r.livro, r.autor, r.paginas, r.nota, r.conteudo, r.status,
+                r.aluno_id, u.nome AS aluno_nome
+            FROM resenhas r
+            JOIN usuarios u ON u.id = r.aluno_id
+            WHERE TRIM(r.status) = 'Pendente';
         """;
 
         try (Connection conn = connect();
