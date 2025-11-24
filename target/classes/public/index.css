@@ -3,10 +3,6 @@
     background: linear-gradient(135deg, #c2d8f3, #f5c7c7, #fef3b7);
 }
 
-.index-body header h1 {
-    font-size: 30px;
-}
-
 .login-container {
     background: #fff;
     padding: 35px;
