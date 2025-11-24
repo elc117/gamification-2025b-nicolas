@@ -23,3 +23,57 @@
 .estrela.ativa {
     color: gold;
 }
+
+.popup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-top: 15px;
+}
+
+.info-box {
+    background: #fafafa;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.06);
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.conteudo-aluno {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    border-radius: 12px;
+    padding: 15px;
+    background: #fff;
+    pointer-events: none;
+    user-select: text;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+#comentario {
+    width: 100%;
+    margin-top: 20px;
+    min-height: 140px;
+    resize: vertical;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 14px;
+}
+
+.info-box,
+#info-resenha,
+.conteudo-aluno {
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+textarea,
+.conteudo-aluno,
+#comentario {
+    box-sizing: border-box;
+    max-width: 100%;
+}

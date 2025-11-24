@@ -10,14 +10,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const enviarBtn = document.getElementById("enviar");
   const textoEl = document.getElementById("texto-resenha");
 
-  // autenticação e UI inicial
-  const usuario = getUsuarioFromStorage();
-  if (!usuario) { window.location.href = "index.html"; return; }
+    // autenticação e UI inicial
+    const usuario = getUsuarioFromStorage();
+    if (!usuario) { window.location.href = "index.html"; return; }
 
-  const nomeEl = document.getElementById("nome-aluno");
-  const pontosEl = document.getElementById("pontos");
-  if (nomeEl) nomeEl.textContent = usuario.nome || "aluno(a)";
-  if (pontosEl) pontosEl.textContent = usuario.pontos ?? 0;
+    async function atualizarUsuario() {
+    try {
+        const r = await fetch(`/usuario/${usuario.id}`);
+        if (r.ok) {
+        const data = await r.json();
+        localStorage.setItem("usuario", JSON.stringify(data));
+
+        document.getElementById("nome-aluno").textContent = data.nome;
+        document.getElementById("pontos").textContent = data.pontos;
+        } else {
+        // fallback caso o backend não responda
+        document.getElementById("nome-aluno").textContent = usuario.nome;
+        document.getElementById("pontos").textContent = usuario.pontos;
+        }
+    } catch (e) {
+        document.getElementById("nome-aluno").textContent = usuario.nome;
+        document.getElementById("pontos").textContent = usuario.pontos;
+    }
+    }
+
+    atualizarUsuario();
+
 
   // leaderboard + logout
   initLeaderboardIfPresent();
@@ -86,6 +104,21 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  // toast dinâmico
+  function toast(msg, tipo = "erro") {
+    const el = document.getElementById("toast");
+    if (!el) return;
+
+    el.textContent = msg;
+
+    // muda cor de fundo dependendo do tipo
+    if (tipo === "sucesso") el.style.background = "#4CAF50"; // verde
+    else el.style.background = "#ff6961"; // vermelho
+
+    el.classList.add("show");
+    setTimeout(() => el.classList.remove("show"), 3000);
+  }
+
   // enviar resenha
   if (enviarBtn) {
     enviarBtn.addEventListener("click", async () => {
@@ -96,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const conteudo = (document.getElementById('texto-resenha')?.value || "").trim();
 
       if (!livro || !autor || !paginas || !notaSelecionada || !conteudo) {
-        toast("preencha todos os campos!");
+        toast("preencha todos os campos!", "erro");
         return;
       }
 
@@ -112,15 +145,42 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(data)
         });
         if (resp.ok) {
-          toast("resenha enviada com sucesso!");
+          toast("resenha enviada com sucesso!", "sucesso");
           fecharPopupId(popupId, false);
         } else {
-          toast("erro ao enviar resenha");
+          toast("erro ao enviar resenha", "erro");
         }
       } catch (err) {
         console.error(err);
-        toast("erro ao enviar resenha");
+        toast("erro ao enviar resenha", "erro");
       }
     });
   }
+  async function carregarHistorico() {
+    const histEl = document.getElementById("historico");
+    if (!histEl) return;
+
+    try {
+        const resp = await fetch(`/resenhas/${usuario.id}`);
+        if (!resp.ok) {
+        histEl.innerHTML = "<div class='resenha-item'>erro ao carregar histórico</div>";
+        return;
+        }
+
+        const lista = await resp.json();
+        histEl.innerHTML = "";
+
+        lista.forEach(r => {
+        const el = document.createElement("div");
+        el.className = "resenha-item";
+        el.textContent = `${r.nomeLivro} — ${r.status}`;
+        histEl.appendChild(el);
+        });
+
+    } catch (err) {
+        histEl.innerHTML = "<div class='resenha-item'>erro ao carregar histórico</div>";
+    }
+    }
+
+    carregarHistorico();
 });

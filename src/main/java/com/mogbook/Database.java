@@ -161,6 +161,24 @@ public class Database {
         return lista;
     }
 
+    public User getUserById(String id) {
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new User(
+                    rs.getString("id"),
+                    rs.getString("nome"),
+                    rs.getString("senha"),
+                    rs.getString("tipo"),
+                    rs.getInt("pontos")
+                );
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
+    }
+
 
     // =========================
     //         RESENHAS
@@ -188,32 +206,17 @@ public class Database {
         }
     }
 
-    public Resenha getResenhaById(String id) {
-        String sql = "SELECT * FROM resenhas WHERE id = ?";
-        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new Resenha(
-                        rs.getString("id"),
-                        rs.getString("livro"),
-                        rs.getString("autor"),
-                        rs.getInt("nota"),
-                        rs.getInt("paginas"),
-                        rs.getString("conteudo"),
-                        rs.getString("status"),
-                        rs.getString("aluno_id")
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public List<Resenha> getResenhasDoAluno(String alunoId) {
         List<Resenha> list = new ArrayList<>();
-        String sql = "SELECT * FROM resenhas WHERE aluno_id = ? ORDER BY rowid DESC";
+        
+        String sql = """
+            SELECT r.id, r.livro, r.autor, r.paginas, r.nota, 
+                r.conteudo, r.status, r.aluno_id, u.nome AS aluno_nome
+            FROM resenhas r
+            JOIN usuarios u ON u.id = r.aluno_id
+            WHERE r.aluno_id = ?
+            ORDER BY r.rowid DESC
+        """;
 
         try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, alunoId);
@@ -221,14 +224,15 @@ public class Database {
 
             while (rs.next()) {
                 Resenha r = new Resenha(
-                        rs.getString("id"),
-                        rs.getString("livro"),
-                        rs.getString("autor"),
-                        rs.getInt("nota"),
-                        rs.getInt("paginas"),
-                        rs.getString("conteudo"),
-                        rs.getString("status"),
-                        alunoId
+                    rs.getString("id"),
+                    rs.getString("livro"),
+                    rs.getString("autor"),
+                    rs.getInt("nota"),
+                    rs.getInt("paginas"),
+                    rs.getString("conteudo"),
+                    rs.getString("status"),
+                    rs.getString("aluno_id"),
+                    rs.getString("aluno_nome")
                 );
                 list.add(r);
             }
@@ -239,6 +243,7 @@ public class Database {
 
         return list;
     }
+
 
     public void updateStatus(String id, String status) {
         String sql = "UPDATE resenhas SET status = ? WHERE id = ?";
@@ -292,7 +297,8 @@ public class Database {
                     rs.getInt("paginas"),
                     rs.getString("conteudo"),
                     rs.getString("status"),
-                    rs.getString("aluno_id")
+                    rs.getString("aluno_id"),
+                    rs.getString("aluno_nome")
                 ));
             }
 
@@ -301,6 +307,50 @@ public class Database {
         }
 
         return list;
-}
+    }
+
+    public void adicionarPontos(String alunoId, int pontos) {
+        String sql = "UPDATE usuarios SET pontos = pontos + ? WHERE id = ?";
+
+        try (Connection conn = connect();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, pontos);
+            stmt.setString(2, alunoId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Resenha getResenhaParaCalculo(String id) {
+        String sql = "SELECT paginas, aluno_id FROM resenhas WHERE id = ?";
+
+        try (Connection conn = connect();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Resenha(
+                    id,
+                    null, null, // não preciso de livro/autor aqui
+                    null,
+                    rs.getInt("paginas"),
+                    null,
+                    null,
+                    rs.getString("aluno_id"),
+                    null
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 }

@@ -22,3 +22,35 @@
 .estrela.ativa {
     color: gold;
 }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.campo-input {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-input label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+#texto-resenha {
+    min-height: 200px;
+    margin-top: 10px;
+}
+
+.popup-content,
+textarea,
+input {
+    max-width: 100%;
+    overflow-x: hidden;
+    word-break: break-word;
+    box-sizing: border-box;
+}

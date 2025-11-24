@@ -2,9 +2,6 @@ package com.mogbook;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
-
-import java.io.File;
-
 import com.google.gson.Gson;
 
 public class Main {
@@ -47,7 +44,7 @@ public class Main {
 
         // LEADERBOARD
         app.get("/leaderboard", ctx -> {
-            var alunos = db.getTopAlunos(10);
+            var alunos = db.getTopAlunos(-1);
             ctx.json(alunos);
         });
 
@@ -77,11 +74,28 @@ public class Main {
             ctx.json(list);
         });
 
+        app.get("/usuario/{id}", ctx -> {
+            String id = ctx.pathParam("id");
+            User u = db.getUserById(id);
+            if (u != null) ctx.json(u);
+            else ctx.status(404);
+        });
+
         app.post("/resenhas/{id}/corrigir", ctx -> {
             String id = ctx.pathParam("id");
             var req = gson.fromJson(ctx.body(), CorrigirRequest.class);
 
             db.marcarCorrigida(id, req.comentario, req.notaProfessor);
+
+            Resenha r = db.getResenhaParaCalculo(id);
+
+            if (r != null) {
+                int paginas = r.getPaginas();
+                int pontos = req.notaProfessor * paginas;
+
+                db.adicionarPontos(r.getIdAluno(), pontos);
+            }
+
             ctx.result("resenha corrigida");
         });
     }

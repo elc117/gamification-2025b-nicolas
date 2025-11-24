@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
     <title>painel do professor</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="professor.css">
@@ -69,12 +69,18 @@
         <div class="popup-content">
             <span class="close">&times;</span>
             <h2>corrigir resenha</h2>
-            <p id="info-resenha"></p>
+            <div class="popup-grid">
+                <div class="info-box">
+                    <p id="info-resenha"></p>
+                </div>
+
+                <textarea id="conteudo-aluno" class="conteudo-aluno" readonly></textarea>
+            </div>
 
             <textarea id="comentario" placeholder="escreva seu feedback..."></textarea>
 
             <div class="campo-input">
-                <label>nota do professor:</label>
+                <label for="nota">nota do professor:</label>
                 <div class="estrelas">
                     <span class="estrela" data-value="1">★</span>
                     <span class="estrela" data-value="2">★</span>

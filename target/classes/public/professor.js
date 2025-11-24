@@ -55,7 +55,7 @@ form.addEventListener('submit', async e => {
     const senha = form.senha.value.trim();
 
     if (!nome || !senha) {
-        showToast('preencha todos os campos');
+        showToast('preencha todos os campos', '#ff6961');
         return;
     }
 
@@ -66,22 +66,67 @@ form.addEventListener('submit', async e => {
             body: JSON.stringify({ nome, senha })
         });
 
-        if (res.ok) showToast('aluno cadastrado com sucesso');
-        else showToast('erro ao cadastrar');
+        if (res.ok) showToast('aluno cadastrado com sucesso', '#4CAF50');
+        else showToast('erro ao cadastrar', '#ff6961')
     } catch {
-        showToast('erro de conexão');
+        showToast('erro de conexão', '#ff6961');
     }
 
     form.reset();
 });
 
-function showToast(msg) {
+function showToast(msg, bgColor = '#ff6961') {
     toast.textContent = msg;
+    toast.style.background = bgColor;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const lista = document.getElementById('lista-leaderboard');
+    const toggleBtn = document.getElementById('toggle-btn');
+    let expanded = false;
+    let alunos = [];
+
+    async function carregarLeaderboard() {
+        try {
+        const res = await fetch('/leaderboard');
+        alunos = await res.json();
+        renderizar();
+        } catch (err) {
+        console.error("erro ao carregar leaderboard", err);
+        }
+    }
+
+    function renderizar() {
+        if (!lista || !toggleBtn) return;
+
+        lista.innerHTML = '';
+        const limite = expanded ? alunos.length : Math.min(10, alunos.length);
+
+        alunos.slice(0, limite).forEach((a, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
+        lista.appendChild(li);
+        });
+
+        if (alunos.length <= 10) {
+        toggleBtn.style.display = 'none';
+        } else {
+        toggleBtn.style.display = 'inline-block';
+        toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
+        }
+    }
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+        expanded = !expanded;
+        renderizar();
+        });
+    }
+
+    carregarLeaderboard();
+
     const popup = document.getElementById("popup");
     const fechar = document.querySelector(".close");
     const cancelar = document.getElementById("cancelar");
@@ -91,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let textoEditado = false;
     let notaSelecionada = 0;
 
-    // inicializa estrelas
     const estrelasController = initEstrelas("#popup .estrelas", v => notaSelecionada = v);
 
     function initEstrelas(selector, callback = () => {}) {
@@ -139,8 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     data-id="${r.id}"
                     data-livro="${r.nomeLivro}"
                     data-autor="${r.autor}"
-                    data-aluno="${r.aluno}"
-                    data-aluno-id="${r.alunoId}"
+                    data-alunonome="${r.alunoNome}"
+                    data-alunoid="${r.idAluno}"
                     data-nota="${r.nota}"
                     data-paginas="${r.paginas}"
                     data-conteudo="${encodeURIComponent(r.conteudo)}"
@@ -156,12 +200,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 infoResenha.innerHTML = `
                     <strong>livro:</strong> ${btn.dataset.livro}<br>
                     <strong>autor:</strong> ${btn.dataset.autor}<br>
-                    <strong>aluno:</strong> ${btn.dataset.aluno}<br>
-                    <strong>id do aluno:</strong> ${btn.dataset.alunoId}<br>
+                    <strong>aluno:</strong> ${btn.dataset.alunonome}<br>
+                    <strong>id do aluno:</strong> ${btn.dataset.alunoid}<br>
                     <strong>nota do aluno:</strong> ${btn.dataset.nota}<br>
                     <strong>páginas:</strong> ${btn.dataset.paginas}<br>
-                    <strong>conteúdo:</strong><br>${decodeURIComponent(btn.dataset.conteudo)}
                 `;
+
+                document.getElementById("conteudo-aluno").value = decodeURIComponent(btn.dataset.conteudo);
 
                 popup.style.display = "flex";
                 comentarioEl.value = "";
