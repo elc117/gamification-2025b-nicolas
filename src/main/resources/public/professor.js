@@ -1,4 +1,3 @@
-
 const popup = document.getElementById("popup");
 const fechar = document.querySelector(".close");
 const cancelar = document.getElementById("cancelar");
@@ -42,8 +41,9 @@ function tentarFechar() {
     }
 }
 
-window.onclick = (e) => { if (e.target === popup) tentarFechar();
-    
+window.onclick = (e) => {
+    if (e.target === popup) tentarFechar();
+
 };
 
 const form = document.getElementById('cadastro-form');
@@ -62,8 +62,13 @@ form.addEventListener('submit', async e => {
     try {
         const res = await fetch('/cadastro-aluno', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, senha })
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nome,
+                senha
+            })
         });
 
         if (res.ok) showToast('aluno cadastrado com sucesso', '#4CAF50');
@@ -90,11 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function carregarLeaderboard() {
         try {
-        const res = await fetch('/leaderboard');
-        alunos = await res.json();
-        renderizar();
+            const res = await fetch('/leaderboard');
+            alunos = await res.json();
+            renderizar();
         } catch (err) {
-        console.error("erro ao carregar leaderboard", err);
+            console.error("erro ao carregar leaderboard", err);
         }
     }
 
@@ -105,23 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const limite = expanded ? alunos.length : Math.min(10, alunos.length);
 
         alunos.slice(0, limite).forEach((a, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
-        lista.appendChild(li);
+            const li = document.createElement('li');
+            li.textContent = `${i + 1}. ${a.nome} - ${a.pontos} pts`;
+            lista.appendChild(li);
         });
 
         if (alunos.length <= 10) {
-        toggleBtn.style.display = 'none';
+            toggleBtn.style.display = 'none';
         } else {
-        toggleBtn.style.display = 'inline-block';
-        toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
+            toggleBtn.style.display = 'inline-block';
+            toggleBtn.textContent = expanded ? 'mostrar menos' : 'mostrar mais';
         }
     }
 
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
-        expanded = !expanded;
-        renderizar();
+            expanded = !expanded;
+            renderizar();
         });
     }
 
@@ -140,7 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initEstrelas(selector, callback = () => {}) {
         const container = document.querySelector(selector);
-        if (!container) return { getNota: () => 0, setNota: () => {} };
+        if (!container) return {
+            getNota: () => 0,
+            setNota: () => {}
+        };
         const estrelas = Array.from(container.querySelectorAll(".estrela"));
         let nota = 0;
 
@@ -151,10 +159,20 @@ document.addEventListener('DOMContentLoaded', () => {
         estrelas.forEach(e => {
             e.addEventListener("mouseover", () => preencher(e.dataset.value));
             e.addEventListener("mouseout", () => preencher(nota));
-            e.addEventListener("click", () => { nota = Number(e.dataset.value); preencher(nota); callback(nota); });
+            e.addEventListener("click", () => {
+                nota = Number(e.dataset.value);
+                preencher(nota);
+                callback(nota);
+            });
         });
 
-        return { getNota: () => nota, setNota: v => { nota = v; preencher(nota); } };
+        return {
+            getNota: () => nota,
+            setNota: v => {
+                nota = v;
+                preencher(nota);
+            }
+        };
     }
 
     function tentarFechar() {
@@ -164,9 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fechar.onclick = tentarFechar;
     cancelar.onclick = tentarFechar;
-    window.onclick = e => { if (e.target === popup) tentarFechar(); };
+    window.onclick = e => {
+        if (e.target === popup) tentarFechar();
+    };
 
-    comentarioEl.addEventListener("input", () => { textoEditado = true; });
+    comentarioEl.addEventListener("input", () => {
+        textoEditado = true;
+    });
 
     async function carregarResenhasPendentes() {
         const res = await fetch('/resenhas/pendentes');
@@ -216,19 +238,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 enviar.onclick = async () => {
                     const comentario = comentarioEl.value.trim();
-                    if (!comentario || !notaSelecionada) { alert("preencha comentário e nota"); return; }
+                    if (!comentario || !notaSelecionada) {
+                        alert("preencha comentário e nota");
+                        return;
+                    }
                     try {
                         const resp = await fetch(`/resenhas/${id}/corrigir`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ comentario, notaProfessor: notaSelecionada })
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                comentario,
+                                notaProfessor: notaSelecionada
+                            })
                         });
                         if (resp.ok) {
                             alert("resenha corrigida!");
                             popup.style.display = "none";
                             carregarResenhasPendentes();
                         } else alert("erro ao corrigir");
-                    } catch(e) { console.error(e); alert("erro de conexão"); }
+                    } catch (e) {
+                        console.error(e);
+                        alert("erro de conexão");
+                    }
                 };
             };
         });

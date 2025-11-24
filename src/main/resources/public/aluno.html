@@ -1,95 +1,104 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dashboard do aluno</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="aluno.css">
-    <link rel="icon" type="image/png" href="/mb.png">
-</head>
-<body class="aluno-body">
-    <header id="header">
-        <h1>painel do aluno</h1>
-        <h1>Mogbook</h1>
-        <div class="header-right">
-            <div>bem-vindo(a), <strong id="nome-aluno">aluno(a)</strong></div>
-            <button id="logout-btn">sair</button>
-        </div>
-    </header>
-
-    <div class="main-container">
-        <div>
-            <div class="card">
-                <h2>nova resenha</h2>
-                <button id="abrir-popup">abrir editor</button>
+    <head>
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>dashboard do aluno</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="aluno.css">
+        <link rel="icon" type="image/png" href="/mb.png">
+    </head>
+    <body class="aluno-body">
+        <header id="header">
+            <h1>painel do aluno</h1>
+            <h1>Mogbook</h1>
+            <div class="header-right">
+                <div>bem-vindo(a), <strong id="nome-aluno">aluno(a)</strong>
+                </div>
+                <button id="logout-btn">sair</button>
             </div>
-
-            <div class="card">
-                <h2>histórico recente</h2>
-                <div id="historico"></div>
-                <button id="ver-todas">ver todas</button>
+        </header>
+        <div class="main-container">
+            <div>
+                <div class="card">
+                    <h2>nova resenha</h2>
+                    <button id="abrir-popup">abrir editor</button>
+                </div>
+                <div class="card">
+                    <h2>histórico recente</h2>
+                    <div id="historico"></div>
+                </div>
             </div>
-        </div>
-
-        <div>
-            <div class="card">
-                <h2>meus pontos</h2>
-                <div class="score" id="pontos"></div>
-            </div>
-            
-            <div class="card">
-                <h2>leaderboard</h2>
-                <div id="leaderboard">
-                    <ul id="lista-leaderboard"></ul>
-                    <button id="toggle-btn">mostrar mais</button>
+            <div>
+                <div class="card">
+                    <h2>meus pontos</h2>
+                    <div class="score" id="pontos"></div>
+                </div>
+                <div class="card">
+                    <h2>leaderboard</h2>
+                    <div id="leaderboard">
+                        <ul id="lista-leaderboard"></ul>
+                        <button id="toggle-btn">mostrar mais</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="popup" class="popup">
-        <div class="popup-content">
-            <span class="close">&times;</span>
-            <div class="form-grid">
-            <div class="campo-input">
-                <label for="livro">nome do livro:</label>
-                <input type="text" id="livro" placeholder="digite o nome do livro">
-            </div>
-
-            <div class="campo-input">
-                <label for="autor">autor:</label>
-                <input type="text" id="autor" placeholder="digite o autor">
-            </div>
-
-            <div class="campo-input">
-                <label for="paginas">páginas:</label>
-                <input type="number" id="paginas" placeholder="número de páginas">
-            </div>
-
-            <div class="campo-input">
-                <label for="nota">nota:</label>
-                <div class="estrelas">
-                <span class="estrela" data-value="1">★</span>
-                <span class="estrela" data-value="2">★</span>
-                <span class="estrela" data-value="3">★</span>
-                <span class="estrela" data-value="4">★</span>
-                <span class="estrela" data-value="5">★</span>
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span class="close">&times;</span>
+                <div class="form-grid">
+                    <div class="campo-input">
+                        <label for="livro">nome do livro:</label>
+                        <input type="text" id="livro" placeholder="digite o nome do livro">
+                    </div>
+                    <div class="campo-input">
+                        <label for="autor">autor:</label>
+                        <input type="text" id="autor" placeholder="digite o autor">
+                    </div>
+                    <div class="campo-input">
+                        <label for="paginas">páginas:</label>
+                        <input type="number" id="paginas" placeholder="número de páginas">
+                    </div>
+                    <div class="campo-input">
+                        <label for="nota">nota:</label>
+                        <div class="estrelas">
+                            <span class="estrela" data-value="1">★</span>
+                            <span class="estrela" data-value="2">★</span>
+                            <span class="estrela" data-value="3">★</span>
+                            <span class="estrela" data-value="4">★</span>
+                            <span class="estrela" data-value="5">★</span>
+                        </div>
+                    </div>
+                </div>
+                <label for="texto-resenha">resenha:</label>
+                <textarea id="texto-resenha" placeholder="escreva sua resenha aqui..."></textarea>
+                <div class="popup-buttons">
+                    <button id="cancelar">cancelar</button>
+                    <button id="enviar">enviar</button>
                 </div>
             </div>
-            </div>
-
-            <label for="texto-resenha">resenha:</label>
-            <textarea id="texto-resenha" placeholder="escreva sua resenha aqui..."></textarea>
-
-            <div class="popup-buttons">
-            <button id="cancelar">cancelar</button>
-            <button id="enviar">enviar</button>
+        </div>
+        <div id="toast" class="toast">preencha todos os campos!</div>
+        <div id="popup-detalhe" class="popup">
+            <div class="popup-content">
+                <span class="close close-detalhe">&times;</span>
+                <h2 id="detalhe-livro"></h2>
+                <p>
+                    <strong>autor:</strong>
+                    <span id="detalhe-autor"></span>
+                </p>
+                <p>
+                    <strong>páginas:</strong>
+                    <span id="detalhe-paginas"></span>
+                </p>
+                <p>
+                    <strong>nota:</strong>
+                    <span id="detalhe-nota"></span>
+                </p>
+                <h3>resenha:</h3>
+                <p id="detalhe-conteudo"></p>
             </div>
         </div>
-    </div>
-    <div id="toast" class="toast">Preencha todos os campos!</div>
-
-    <script src="aluno.js"></script>
-    <script src="common.js"></script>
-</body>
+        <script src="aluno.js"></script>
+        <script src="common.js"></script>
+    </body>
 </html>

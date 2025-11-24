@@ -54,3 +54,27 @@ input {
     word-break: break-word;
     box-sizing: border-box;
 }
+
+.resenha-item {
+    padding: 6px;
+    cursor: default;
+}
+
+.resenha-click-area {
+    cursor: pointer;
+}
+
+.status-badge {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+    color: #222;
+}
+
+.status-pendente {
+    background: #ffd54f; /* amarelo */
+}
+
+.status-ok {
+    background: #81c784; /* verde */
+}

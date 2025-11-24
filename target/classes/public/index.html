@@ -1,37 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="index.css">
-    <link rel="icon" type="image/png" href="/mb.png">
-</head>
-<body class="index-body">
-    <header>
-        <h1> </h1>
-        <h1>mogbook</h1>
-        <div></div>
-    </header>
-
-    <div class="login-container">
-        <h2>acesso</h2>
-        <form id="login-form">
-            <input type="text" id="usuario" placeholder="usuário" required>
-            <div class="senha-container">
-                <input type="password" id="senha" placeholder="senha" required>
-                <span id="toggle-senha">👁️</span>
-            </div>
-            <button type="submit">entrar</button>
-        </form>
-        <div id="toast" class="toast"></div>
-    </div>
-
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <p>carregando...</p>
-    </div>
-
-    <script src="index.js"></script>
-</body>
+    <head>
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>login</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="index.css">
+        <link rel="icon" type="image/png" href="/mb.png">
+    </head>
+    <body class="index-body">
+        <header>
+            <h1></h1>
+            <h1>mogbook</h1>
+            <div></div>
+        </header>
+        <div class="login-container">
+            <h2>acesso</h2>
+            <form id="login-form">
+                <input type="text" id="usuario" placeholder="usuário" required>
+                <div class="senha-container">
+                    <input type="password" id="senha" placeholder="senha" required>
+                    <span id="toggle-senha">👁️</span>
+                </div>
+                <button type="submit">entrar</button>
+            </form>
+            <div id="toast" class="toast"></div>
+        </div>
+        <div id="loading-overlay">
+            <div class="spinner"></div>
+            <p>carregando...</p>
+        </div>
+        <script src="index.js"></script>
+    </body>
 </html>

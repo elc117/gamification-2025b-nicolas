@@ -28,17 +28,17 @@ public class Database {
     // =========================
     public void createTables() {
         String sqlUsuarios = """
-            CREATE TABLE IF NOT EXISTS usuarios (
+            CREATE TABLE IF NOT EXISTS usuarios(
                 id TEXT PRIMARY KEY,
                 nome TEXT NOT NULL,
                 senha TEXT NOT NULL,
-                tipo TEXT CHECK(tipo IN ('aluno','professor')) NOT NULL,
+                tipo TEXT CHECK(tipo IN('aluno', 'professor')) NOT NULL,
                 pontos INTEGER NOT NULL DEFAULT 0
             );
         """;
 
         String sqlResenhas = """
-            CREATE TABLE IF NOT EXISTS resenhas (
+            CREATE TABLE IF NOT EXISTS resenhas(
                 id TEXT PRIMARY KEY,
                 aluno_id TEXT NOT NULL,
                 livro TEXT NOT NULL,
@@ -46,10 +46,10 @@ public class Database {
                 paginas INTEGER,
                 nota INTEGER CHECK(nota BETWEEN 1 AND 5),
                 conteudo TEXT,
-                status TEXT CHECK(status IN ('Pendente', 'Corrigida')) DEFAULT 'Pendente',
+                status TEXT CHECK(status IN('Pendente', 'Corrigida')) DEFAULT 'Pendente',
                 comentario TEXT,
                 nota_professor INTEGER,
-                FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
+                FOREIGN KEY(aluno_id) REFERENCES usuarios(id)
             );
         """;
 
@@ -98,11 +98,11 @@ public class Database {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 return new User(
-                        rs.getString("id"),
-                        rs.getString("nome"),
-                        rs.getString("senha"),
-                        rs.getString("tipo"),
-                        rs.getInt("pontos")
+                    rs.getString("id"),
+                    rs.getString("nome"),
+                    rs.getString("senha"),
+                    rs.getString("tipo"),
+                    rs.getInt("pontos")
                 );
             }
         } catch (SQLException e) {
@@ -136,22 +136,21 @@ public class Database {
         }
     }
 
-    public List<User> getTopAlunos(int limit) {
-        List<User> lista = new ArrayList<>();
+    public List < User > getTopAlunos(int limit) {
+        List < User > lista = new ArrayList < > ();
         String sql = "SELECT * FROM usuarios WHERE tipo = 'aluno' ORDER BY pontos DESC LIMIT ?";
 
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, limit);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 User u = new User(
-                        rs.getString("id"),
-                        rs.getString("nome"),
-                        rs.getString("senha"),
-                        rs.getString("tipo"),
-                        rs.getInt("pontos")
+                    rs.getString("id"),
+                    rs.getString("nome"),
+                    rs.getString("senha"),
+                    rs.getString("tipo"),
+                    rs.getInt("pontos")
                 );
                 lista.add(u);
             }
@@ -175,10 +174,11 @@ public class Database {
                     rs.getInt("pontos")
                 );
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
-
 
     // =========================
     //         RESENHAS
@@ -206,11 +206,11 @@ public class Database {
         }
     }
 
-    public List<Resenha> getResenhasDoAluno(String alunoId) {
-        List<Resenha> list = new ArrayList<>();
-        
+    public List < Resenha > getResenhasDoAluno(String alunoId) {
+        List < Resenha > list = new ArrayList < > ();
+
         String sql = """
-            SELECT r.id, r.livro, r.autor, r.paginas, r.nota, 
+            SELECT r.id, r.livro, r.autor, r.paginas, r.nota,
                 r.conteudo, r.status, r.aluno_id, u.nome AS aluno_nome
             FROM resenhas r
             JOIN usuarios u ON u.id = r.aluno_id
@@ -244,7 +244,6 @@ public class Database {
         return list;
     }
 
-
     public void updateStatus(String id, String status) {
         String sql = "UPDATE resenhas SET status = ? WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -259,8 +258,7 @@ public class Database {
     public void marcarCorrigida(String id, String comentario, int notaProfessor) {
         String sql = "UPDATE resenhas SET status = 'Corrigida', comentario = ?, nota_professor = ? WHERE id = ?";
 
-        try (Connection conn = connect();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, comentario);
             stmt.setInt(2, notaProfessor);
@@ -272,9 +270,9 @@ public class Database {
         }
     }
 
-    public List<Resenha> getResenhasPendentes() {
+    public List < Resenha > getResenhasPendentes() {
         System.out.println("buscando pendentes no banco: " + url);
-        List<Resenha> list = new ArrayList<>();
+        List < Resenha > list = new ArrayList < > ();
         String sql = """
             SELECT r.id, r.livro, r.autor, r.paginas, r.nota, r.conteudo, r.status,
                 r.aluno_id, u.nome AS aluno_nome
@@ -283,9 +281,7 @@ public class Database {
             WHERE TRIM(r.status) = 'Pendente';
         """;
 
-        try (Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 System.out.println("achei pendente: id=" + rs.getString("id"));
@@ -312,9 +308,8 @@ public class Database {
     public void adicionarPontos(String alunoId, int pontos) {
         String sql = "UPDATE usuarios SET pontos = pontos + ? WHERE id = ?";
 
-        try (Connection conn = connect();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, pontos);
             stmt.setString(2, alunoId);
             stmt.executeUpdate();
@@ -327,8 +322,7 @@ public class Database {
     public Resenha getResenhaParaCalculo(String id) {
         String sql = "SELECT paginas, aluno_id FROM resenhas WHERE id = ?";
 
-        try (Connection conn = connect();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();

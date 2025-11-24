@@ -1,103 +1,75 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>painel do professor</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="professor.css">
-    <link rel="icon" type="image/png" href="/mb.png">
-</head>
-<body class="prof-body">
-    <header id="header">
-        <h1>painel do professor</h1>
-        <h1>mogbook</h1>
-        <div class="header-right">
-            <div>bem-vindo(a), <strong>professor(a)</strong></div>
-            <button id="logout-btn">sair</button>
-        </div>
-    </header>
-
-    <div class="main-container">
-        <div>
-            <div class="card">
-                <h2>resenhas pendentes</h2>
-                <div id="pendentes">
+    <head>
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>painel do professor</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="professor.css">
+        <link rel="icon" type="image/png" href="/mb.png">
+    </head>
+    <body class="prof-body">
+        <header id="header">
+            <h1>painel do professor</h1>
+            <h1>mogbook</h1>
+            <div class="header-right">
+                <div>bem-vindo(a), <strong>professor(a)</strong>
                 </div>
-            </div> 
-            <div class="card">
-                <h2>alunos</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>nome</th>
-                            <th>pontos</th>
-                            <th>livros lidos</th>
-                            <th>resenhas</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-alunos">
-                        <tr><td>ana</td><td>1200</td><td>5</td><td>4</td></tr>
-                        <tr><td>joão</td><td>1100</td><td>4</td><td>3</td></tr>
-                        <tr><td>bia</td><td>980</td><td>3</td><td>3</td></tr>
-                    </tbody>
-                </table>
+                <button id="logout-btn">sair</button>
             </div>
-        </div>
-
-        <div> 
-            <div class="card">
-                <h2>cadastrar aluno</h2>
-                <form id="cadastro-form">
-                    <input type="text" id="nome" placeholder="nome do aluno" required>
-                    <input type="password" id="senha" placeholder="senha" required>
-                    <button type="submit">cadastrar</button>
-                </form>
-                <div id="toast" class="toast"></div>
+        </header>
+        <div class="main-container">
+            <div>
+                <div class="card">
+                    <h2>resenhas pendentes</h2>
+                    <div id="pendentes"></div>
+                </div>
             </div>
-            
-            <div class="card">
-                <h2>leaderboard</h2>
-                <div id="leaderboard">
-                    <ul id="lista-leaderboard"></ul>
-                    <button id="toggle-btn">mostrar mais</button>
+            <div>
+                <div class="card">
+                    <h2>cadastrar aluno</h2>
+                    <form id="cadastro-form">
+                        <input type="text" id="nome" placeholder="nome do aluno" required>
+                        <input type="password" id="senha" placeholder="senha" required>
+                        <button type="submit">cadastrar</button>
+                    </form>
+                    <div id="toast" class="toast"></div>
+                </div>
+                <div class="card">
+                    <h2>leaderboard</h2>
+                    <div id="leaderboard">
+                        <ul id="lista-leaderboard"></ul>
+                        <button id="toggle-btn">mostrar mais</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div id="popup" class="popup">
-        <div class="popup-content">
-            <span class="close">&times;</span>
-            <h2>corrigir resenha</h2>
-            <div class="popup-grid">
-                <div class="info-box">
-                    <p id="info-resenha"></p>
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span class="close">&times;</span>
+                <h2>corrigir resenha</h2>
+                <div class="popup-grid">
+                    <div class="info-box">
+                        <p id="info-resenha"></p>
+                    </div>
+                    <textarea id="conteudo-aluno" class="conteudo-aluno" readonly></textarea>
                 </div>
-
-                <textarea id="conteudo-aluno" class="conteudo-aluno" readonly></textarea>
-            </div>
-
-            <textarea id="comentario" placeholder="escreva seu feedback..."></textarea>
-
-            <div class="campo-input">
-                <label for="nota">nota do professor:</label>
-                <div class="estrelas">
-                    <span class="estrela" data-value="1">★</span>
-                    <span class="estrela" data-value="2">★</span>
-                    <span class="estrela" data-value="3">★</span>
-                    <span class="estrela" data-value="4">★</span>
-                    <span class="estrela" data-value="5">★</span>
+                <textarea id="comentario" placeholder="escreva seu feedback..."></textarea>
+                <div class="campo-input">
+                    <label for="nota">nota do professor:</label>
+                    <div class="estrelas">
+                        <span class="estrela" data-value="1">★</span>
+                        <span class="estrela" data-value="2">★</span>
+                        <span class="estrela" data-value="3">★</span>
+                        <span class="estrela" data-value="4">★</span>
+                        <span class="estrela" data-value="5">★</span>
+                    </div>
                 </div>
-            </div>
-
-            <div class="popup-buttons">
-                <button id="cancelar">cancelar</button>
-                <button id="enviar">enviar correção</button>
+                <div class="popup-buttons">
+                    <button id="cancelar">cancelar</button>
+                    <button id="enviar">enviar correção</button>
+                </div>
             </div>
         </div>
-    </div>
-
-
-    <script src="professor.js"></script>
-</body>
+        <script src="professor.js"></script>
+    </body>
 </html>

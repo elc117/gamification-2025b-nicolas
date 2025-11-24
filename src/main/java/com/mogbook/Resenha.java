@@ -12,7 +12,7 @@ public class Resenha {
     private String alunoNome;
 
     public Resenha(String id, String nome_livro, String autor, Integer nota, Integer paginas,
-                String conteudo, String status, String idAluno, String alunoNome) {
+        String conteudo, String status, String idAluno, String alunoNome) {
 
         this.id = id;
         this.nome_livro = nome_livro;
@@ -25,15 +25,35 @@ public class Resenha {
         this.alunoNome = alunoNome;
     }
 
-    public String getId() { return id; }
-    public String getNomeLivro() { return nome_livro; }
-    public String getAutor() { return autor; }
-    public Integer getNota() { return nota; }
-    public Integer getPaginas() { return paginas; }
-    public String getConteudo() { return conteudo; }
-    public String getStatus() { return status; }
-    public String getIdAluno() { return idAluno; }
-    public String getAlunoNome() { return alunoNome; }
+    public String getId() {
+        return id;
+    }
+    public String getNomeLivro() {
+        return nome_livro;
+    }
+    public String getAutor() {
+        return autor;
+    }
+    public Integer getNota() {
+        return nota;
+    }
+    public Integer getPaginas() {
+        return paginas;
+    }
+    public String getConteudo() {
+        return conteudo;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public String getIdAluno() {
+        return idAluno;
+    }
+    public String getAlunoNome() {
+        return alunoNome;
+    }
 
-    public void setstatus(String status) { this.status = status; }
+    public void setstatus(String status) {
+        this.status = status;
+    }
 }

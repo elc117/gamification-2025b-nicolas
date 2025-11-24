@@ -15,11 +15,23 @@ public class User {
         this.pontos = pontos;
     }
 
-    public String getId() { return id; }
-    public String getNome() { return nome; }
-    public String getSenha() { return senha; }
-    public String getTipo() { return tipo; }
-    public Integer getPontos() { return pontos; }
+    public String getId() {
+        return id;
+    }
+    public String getNome() {
+        return nome;
+    }
+    public String getSenha() {
+        return senha;
+    }
+    public String getTipo() {
+        return tipo;
+    }
+    public Integer getPontos() {
+        return pontos;
+    }
 
-    public void setPontos(Integer pontos) { this.pontos = pontos; }
+    public void setPontos(Integer pontos) {
+        this.pontos = pontos;
+    }
 }
