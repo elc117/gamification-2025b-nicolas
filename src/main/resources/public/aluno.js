@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function atualizarUsuario() {
         try {
-            const r = await fetch(`/usuario/${usuario.id}`);
+            const r = await fetch(`https://mogbook.onrender.com/usuario/${usuario.id}`);
             if (r.ok) {
                 const data = await r.json();
                 localStorage.setItem("usuario", JSON.stringify(data));
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             try {
-                const resp = await fetch('/resenha', {
+                const resp = await fetch('https://mogbook.onrender.com/resenha', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!histEl) return;
 
         try {
-            const resp = await fetch(`/resenhas/${usuario.id}`);
+            const resp = await fetch(`https://mogbook.onrender.com/resenhas/${usuario.id}`);
             if (!resp.ok) {
                 histEl.innerHTML = "<div class='resenha-item'>erro ao carregar histórico</div>";
                 return;
@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarPremios() {
         const el = document.getElementById("troca-pontos");
-        const r = await fetch("/premios");
+        const r = await fetch("https://mogbook.onrender.com/premios");
         const premios = await r.json();
 
         el.innerHTML = "";
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             div.querySelector("button").onclick = async () => {
-                const resp = await fetch("/trocar", {
+                const resp = await fetch("https://mogbook.onrender.com/trocar", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ alunoId: usuario.id, premioId: p.id })
