@@ -32,6 +32,8 @@ Deixei alguns comentário mais específicos mais para baixo, sem ser algo com re
 
 ### 4. Diagrama de classes:
 
+![Diagrama de classes](class-diagram.png)
+
 ### 5. Orientações para execução:
 Eu utilizei nesse projeto o Maven, que compila e executa tudo que precisa sempre, mas pra qualquer um poder executar o aplicativo sem precisar ter que instalar nada, eu deixei um arquivo pronto para ser utilizado. Basta procurar o arquivo no diretório: ```/release```, que lá estará um arquivo chamado ```gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar```, então basta ir no seu terminal e digitar:
 ```
@@ -43,6 +45,8 @@ Caso você tenha simplesmente baixado o repositório, apenas execute:
 ```
 java -jar target/gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
+
+### 6. Resultado final: 
 
 ### 7. Referências:
 https://www.devmedia.com.br/java-crie-uma-conexao-com-banco-de-dados/5698
