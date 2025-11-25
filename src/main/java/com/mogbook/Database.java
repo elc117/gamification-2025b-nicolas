@@ -53,9 +53,18 @@ public class Database {
             );
         """;
 
+        String sqlPremios = """
+            CREATE TABLE IF NOT EXISTS premios (
+                id TEXT PRIMARY KEY,
+                nome TEXT NOT NULL,
+                custo INTEGER NOT NULL
+            );
+        """;
+
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             stmt.execute(sqlUsuarios);
             stmt.execute(sqlResenhas);
+            stmt.execute(sqlPremios);
             System.out.println("tabelas criadas/verificadas");
 
             // cria professor padrão caso não tenha nenhum
@@ -346,5 +355,63 @@ public class Database {
 
         return null;
     }
+
+
+    // =========================
+    //         PRÊMIO
+    // =========================
+
+    public void addPremio(String nome, int custo) {
+        String id = UUID.randomUUID().toString();
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO premios (id, nome, custo) VALUES (?, ?, ?)")) {
+            stmt.setString(1, id);
+            stmt.setString(2, nome);
+            stmt.setInt(3, custo);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public List<Premio> getPremios() {
+        List<Premio> lista = new ArrayList<>();
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM premios");
+            var rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(new Premio(
+                    rs.getString("id"),
+                    rs.getString("nome"),
+                    rs.getInt("custo")
+                ));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+
+    public Premio getPremioById(String id) {
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM premios WHERE id = ?")) {
+            stmt.setString(1, id);
+            var rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Premio(
+                    rs.getString("id"),
+                    rs.getString("nome"),
+                    rs.getInt("custo")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }

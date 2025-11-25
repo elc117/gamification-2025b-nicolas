@@ -9,7 +9,7 @@ document.querySelectorAll(".corrigir").forEach(btn => {
     btn.onclick = () => {
         const nome = btn.dataset.nome;
         const livro = btn.dataset.livro;
-        infoResenha.innerText = `${nome} — ${livro}`;
+        infoResenha.innerText = `${nome} - ${livro}`;
         popup.style.display = "flex";
         document.getElementById("comentario").value = "";
         textoEditado = false;
@@ -18,16 +18,6 @@ document.querySelectorAll(".corrigir").forEach(btn => {
 
 fechar.onclick = tentarFechar;
 cancelar.onclick = tentarFechar;
-
-enviar.onclick = () => {
-    const texto = document.getElementById("comentario").value.trim();
-    if (texto) {
-        alert("correção enviada (mock)");
-        popup.style.display = "none";
-    } else {
-        alert("escreva algo antes de enviar");
-    }
-};
 
 document.getElementById("comentario").addEventListener("input", () => {
     textoEditado = true;
@@ -86,6 +76,29 @@ function showToast(msg, bgColor = '#ff6961') {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
+
+document.getElementById("form-premio").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const nome = document.getElementById("premio-nome").value.trim();
+    const custo = Number(document.getElementById("premio-custo").value.trim());
+
+    if (!nome || !custo || custo <= 0) {
+        showToast("dados inválidos", '#ff6961');
+        return;
+    }
+
+    const resp = await fetch("/premios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, custo })
+    });
+
+    if (resp.ok) {
+        showToast("prêmio criado", '#4CAF50');
+        e.target.reset();
+    } else showToast("erro", '#ff6961');
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const lista = document.getElementById('lista-leaderboard');
@@ -239,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 enviar.onclick = async () => {
                     const comentario = comentarioEl.value.trim();
                     if (!comentario || !notaSelecionada) {
-                        alert("preencha comentário e nota");
+                        showToast("preencha comentário e nota", '#ff6961');
                         return;
                     }
                     try {
@@ -254,13 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             })
                         });
                         if (resp.ok) {
-                            alert("resenha corrigida!");
+                            showToast("resenha corrigida!", '#4CAF50');
                             popup.style.display = "none";
                             carregarResenhasPendentes();
-                        } else alert("erro ao corrigir");
+                        } else showToast("erro ao corrigir", '#ff6961');
                     } catch (e) {
                         console.error(e);
-                        alert("erro de conexão");
+                        showToast("erro de conexão", '#ff6961');
                     }
                 };
             };

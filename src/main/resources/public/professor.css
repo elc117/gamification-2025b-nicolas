@@ -78,6 +78,7 @@ textarea,
     max-width: 100%;
 }
 
+#form-premio input,
 #cadastro-form input {
     width: 100%;
     box-sizing: border-box;

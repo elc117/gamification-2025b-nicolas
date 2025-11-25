@@ -1,8 +1,2 @@
-com\mogbook\Database.class
-com\mogbook\Main$CorrigirRequest.class
-com\mogbook\Main.class
 com\mogbook\Resenha.class
 com\mogbook\User.class
-com\mogbook\Main$LoginRequest.class
-com\mogbook\Main$NovoAlunoRequest.class
-com\mogbook\Main$ResenhaRequest.class

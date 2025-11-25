@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         notaSelecionada = v;
     });
 
-    // abrir popup — apenas se botão existir
+    // abrir popup - apenas se botão existir
     if (abrirBtn) {
         abrirBtn.addEventListener("click", () => {
             abrirPopupId(popupId);
@@ -241,4 +241,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     carregarHistorico();
+
+    async function carregarPremios() {
+        const el = document.getElementById("troca-pontos");
+        const r = await fetch("/premios");
+        const premios = await r.json();
+
+        el.innerHTML = "";
+
+        premios.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "premio-item";
+            div.innerHTML = `
+                <span>${p.nome}</span>
+                <span>${p.custo} pts</span>
+                <button data-id="${p.id}">trocar</button>
+            `;
+
+            div.querySelector("button").onclick = async () => {
+                const resp = await fetch("/trocar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ alunoId: usuario.id, premioId: p.id })
+                });
+
+                if (resp.ok) {
+                    toast("troca feita!", "sucesso");
+                    atualizarUsuario();
+                } else toast("erro ou pontos insuficientes");
+            };
+
+            el.appendChild(div);
+        });
+    }
+
+    carregarPremios();
+
 });

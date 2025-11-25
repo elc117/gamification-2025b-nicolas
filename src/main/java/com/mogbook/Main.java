@@ -23,7 +23,10 @@ public class Main {
 
         Gson gson = new Gson();
 
-        // LOGIN
+    // =========================
+    //         ENDPOINTS
+    // =========================
+
         app.post("/login", ctx -> {
             var req = gson.fromJson(ctx.body(), LoginRequest.class);
             User user = db.getUserByName(req.usuario);
@@ -35,20 +38,17 @@ public class Main {
             }
         });
 
-        // CADASTRAR ALUNO
         app.post("/cadastro-aluno", ctx -> {
             var req = gson.fromJson(ctx.body(), NovoAlunoRequest.class);
             db.addUser(req.nome, req.senha, "aluno", 0);
             ctx.result("aluno cadastrado");
         });
 
-        // LEADERBOARD
         app.get("/leaderboard", ctx -> {
             var alunos = db.getTopAlunos(-1);
             ctx.json(alunos);
         });
 
-        // CRIAR RESENHA
         app.post("/resenha", ctx -> {
             var req = gson.fromJson(ctx.body(), ResenhaRequest.class);
 
@@ -98,7 +98,49 @@ public class Main {
 
             ctx.result("resenha corrigida");
         });
+
+        app.get("/premios", ctx -> {
+            ctx.json(db.getPremios());
+        });
+
+        app.post("/premios", ctx -> {
+            var req = gson.fromJson(ctx.body(), CriarPremioRequest.class);
+
+            if (req.nome == null || req.custo <= 0) {
+                ctx.status(400).result("dados inválidos");
+                return;
+            }
+
+            db.addPremio(req.nome, req.custo);
+            ctx.result("premio criado");
+        });
+
+        app.post("/trocar", ctx -> {
+            var req = gson.fromJson(ctx.body(), TrocaRequest.class);
+
+            User u = db.getUserById(req.alunoId);
+            Premio p = db.getPremioById(req.premioId);
+
+            if (u == null || p == null) {
+                ctx.status(400).result("erro");
+                return;
+            }
+
+            if (u.getPontos() < p.getCusto()) {
+                ctx.status(400).result("pontos insuficientes");
+                return;
+            }
+
+            db.adicionarPontos(u.getId(), -p.getCusto());
+
+            ctx.result("troca concluída");
+        });
     }
+
+
+    // =========================
+    //     CLASSES REQUESTS
+    // =========================
 
     private static class NovoAlunoRequest {
         String nome;
@@ -122,5 +164,15 @@ public class Main {
     private static class CorrigirRequest {
         String comentario;
         int notaProfessor;
+    }
+
+    private static class CriarPremioRequest {
+        String nome;
+        int custo;
+    }
+
+    private static class TrocaRequest {
+        String alunoId;
+        String premioId;
     }
 }
