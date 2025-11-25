@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             div.className = 'resenha-item';
             div.innerHTML = `
-                <p>${r.nomeLivro} — ${r.autor}</p>
+                <p>${r.nomeLivro} - ${r.autor}</p>
                 <button class="corrigir"
                     data-id="${r.id}"
                     data-livro="${r.nomeLivro}"

@@ -2,12 +2,18 @@ package com.mogbook;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Map;
+
 import com.google.gson.Gson;
 
 public class Main {
     public static void main(String[] args) {
         Database db = new Database("mogbook.db");
 
+        new File("recibos").mkdirs();
         db.createTables();
 
         if (db.isEmpty()) {
@@ -133,8 +139,43 @@ public class Main {
 
             db.adicionarPontos(u.getId(), -p.getCusto());
 
-            ctx.result("troca concluída");
+            String nomeArquivo = "recibo-" + u.getId() + "-" + System.currentTimeMillis() + ".pdf";
+            String caminho = "recibos/" + nomeArquivo;
+
+            String gerado = Recibo.gerar(
+                    u.getId(),
+                    u.getNome(),
+                    p.getId(),
+                    p.getNome(),
+                    p.getCusto(),
+                    caminho
+            );
+
+            if (gerado == null) {
+                ctx.status(500).result("erro ao gerar recibo");
+                return;
+            }
+
+            ctx.json(Map.of(
+                    "status", "ok",
+                    "arquivo", nomeArquivo
+            ));
         });
+
+        app.get("/recibo/{nome}", ctx -> {
+            String nome = ctx.pathParam("nome");
+            File f = new File("recibos/" + nome);
+
+            if (!f.exists()) {
+                ctx.status(404).result("arquivo não encontrado");
+                return;
+            }
+
+            ctx.header("Content-Disposition", "attachment; filename=" + nome);
+            ctx.contentType("application/pdf");
+            ctx.result(new FileInputStream(f));
+        });
+
     }
 
 
