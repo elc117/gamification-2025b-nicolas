@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     toast("troca feita!", "sucesso");
                     atualizarUsuario();
 
-                    window.open(`http://localhost:7000/recibo/${data.arquivo}`, "_blank");
+                    window.open(`https://mogbook.onrender.com/recibo/${data.arquivo}`, "_blank");
                 } else {
                     toast("erro ou pontos insuficientes");
                 }

@@ -43,7 +43,7 @@ java -jar gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar
 Caso você tenha simplesmente baixado o repositório, apenas execute:
 
 ```
-java -jar target/gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar release/gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
 ### 6. Resultado final: 
