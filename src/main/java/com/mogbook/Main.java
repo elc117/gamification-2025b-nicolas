@@ -27,6 +27,16 @@ public class Main {
             });
         }).start(7000);
 
+        app.before(ctx -> {
+            ctx.header("Access-Control-Allow-Origin", "https://html-classic.itch.zone");
+            ctx.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+            ctx.header("Access-Control-Allow-Headers", "Content-Type");
+        });
+
+        app.options("/*", ctx -> {
+            ctx.status(204);
+        });
+
         Gson gson = new Gson();
 
     // =========================
