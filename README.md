@@ -24,9 +24,13 @@ Dada uma solicitação externa, essa aplicação é um portal para registro de l
 
 3.6: Criação das trocas de pontos por prêmios.
 
+3.6.1: Criação dos recibos de trocas.
+
 3.7: Ajustes finais no frond-end.
 
 Deixei alguns comentário mais específicos mais para baixo, sem ser algo com relação as etapas de desenvolvimento, e sim sobre como eu me senti mesmo ;).
+
+### 4. Diagrama de classes:
 
 ### 5. Orientações para execução:
 Eu utilizei nesse projeto o Maven, que compila e executa tudo que precisa sempre, mas pra qualquer um poder executar o aplicativo sem precisar ter que instalar nada, eu deixei um arquivo pronto para ser utilizado. Basta procurar o arquivo no diretório: ```/release```, que lá estará um arquivo chamado ```gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar```, então basta ir no seu terminal e digitar:
@@ -47,6 +51,8 @@ https://www.geeksforgeeks.org/java/jdbc-tutorial/
 
 https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design
 
+https://www.devmedia.com.br/gerando-pdf-itext/18843
+
 ### 8. Comentários:
 Em geral, o processo de desenvolvimento foi divertido, contudo, tive que aprender como fazer um banco de dados funcionar e como fazer isso em Java, que era uma linguagem que eu não tive quase nada de contato. A minha salvação foi que tive que fazer outro trabalho envolvendo Java e BD, o que me ajudou bastante. Pedi ajuda pro ChatGPT em alguns momentos para a interface visual e para deixar os comentários melhores, exemplo:
 ```Java
@@ -56,5 +62,7 @@ Em geral, o processo de desenvolvimento foi divertido, contudo, tive que aprende
 ```
 
 Trabalhar com as requisições foi interessante também (basicamente criando uma API REST), com os arquivos JSON que eu precisava mandar para lá e para cá, e como tratar eles no endpoints corretos, depois que eu comecei a entender o que eu tava de fato fazendo ajudou bastante.
+
+Ali nos recibos das trocas, tive que pesquisar como fazer um PDF com Java, foi bem legal.
 
 Mas tirando as dificuldades, foi uma ótima experiência, por realmente achar que o projeto pode ser útil em algum momento, com algum polimento e mais tempo de desenvolvimento, sinto que posso levar para frente de alguma maneira :D.

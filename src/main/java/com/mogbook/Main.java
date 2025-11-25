@@ -125,14 +125,18 @@ public class Main {
             var req = gson.fromJson(ctx.body(), TrocaRequest.class);
 
             User u = db.getUserById(req.alunoId);
-            Premio p = db.getPremioById(req.premioId);
+            if (!(u instanceof Aluno aluno)) {
+                ctx.status(400).result("usuário não é aluno");
+                return;
+            }
 
-            if (u == null || p == null) {
+            Premio p = db.getPremioById(req.premioId);
+            if (p == null) {
                 ctx.status(400).result("erro");
                 return;
             }
 
-            if (u.getPontos() < p.getCusto()) {
+            if (aluno.getPontos() < p.getCusto()) {
                 ctx.status(400).result("pontos insuficientes");
                 return;
             }

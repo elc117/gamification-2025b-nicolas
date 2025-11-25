@@ -1,18 +1,16 @@
 package com.mogbook;
 
 public class User {
-    private String id;
-    private String nome;
-    private String senha;
-    private String tipo;
-    private Integer pontos;
+    protected String id;
+    protected String nome;
+    protected String senha;
+    protected String tipo;
 
-    public User(String id, String nome, String senha, String tipo, Integer pontos) {
+    public User(String id, String nome, String senha, String tipo) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;
         this.tipo = tipo;
-        this.pontos = pontos;
     }
 
     public String getId() {
@@ -26,12 +24,5 @@ public class User {
     }
     public String getTipo() {
         return tipo;
-    }
-    public Integer getPontos() {
-        return pontos;
-    }
-
-    public void setPontos(Integer pontos) {
-        this.pontos = pontos;
     }
 }

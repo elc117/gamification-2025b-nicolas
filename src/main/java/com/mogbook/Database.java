@@ -26,6 +26,7 @@ public class Database {
     // =========================
     //       CRIA TABELAS
     // =========================
+
     public void createTables() {
         String sqlUsuarios = """
             CREATE TABLE IF NOT EXISTS usuarios(
@@ -106,19 +107,28 @@ public class Database {
             pstmt.setString(1, nome);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new User(
-                    rs.getString("id"),
-                    rs.getString("nome"),
-                    rs.getString("senha"),
-                    rs.getString("tipo"),
-                    rs.getInt("pontos")
-                );
+                String tipo = rs.getString("tipo");
+                if ("aluno".equals(tipo)) {
+                    return new Aluno(
+                        rs.getString("id"),
+                        rs.getString("nome"),
+                        rs.getString("senha"),
+                        rs.getInt("pontos")
+                    );
+                } else { // professor
+                    return new Professor(
+                        rs.getString("id"),
+                        rs.getString("nome"),
+                        rs.getString("senha")
+                    );
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     private String gerarNovoId() {
         String sql = "SELECT id FROM usuarios ORDER BY id DESC LIMIT 1";
@@ -145,27 +155,22 @@ public class Database {
         }
     }
 
-    public List < User > getTopAlunos(int limit) {
-        List < User > lista = new ArrayList < > ();
+    public List<Aluno> getTopAlunos(int limit) {
+        List<Aluno> lista = new ArrayList<>();
         String sql = "SELECT * FROM usuarios WHERE tipo = 'aluno' ORDER BY pontos DESC LIMIT ?";
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, limit);
             ResultSet rs = pstmt.executeQuery();
-
             while (rs.next()) {
-                User u = new User(
+                lista.add(new Aluno(
                     rs.getString("id"),
                     rs.getString("nome"),
                     rs.getString("senha"),
-                    rs.getString("tipo"),
                     rs.getInt("pontos")
-                );
-                lista.add(u);
+                ));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return lista;
     }
 
@@ -175,17 +180,23 @@ public class Database {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new User(
-                    rs.getString("id"),
-                    rs.getString("nome"),
-                    rs.getString("senha"),
-                    rs.getString("tipo"),
-                    rs.getInt("pontos")
-                );
+                String tipo = rs.getString("tipo");
+                if ("aluno".equals(tipo)) {
+                    return new Aluno(
+                        rs.getString("id"),
+                        rs.getString("nome"),
+                        rs.getString("senha"),
+                        rs.getInt("pontos")
+                    );
+                } else {
+                    return new Professor(
+                        rs.getString("id"),
+                        rs.getString("nome"),
+                        rs.getString("senha")
+                    );
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
 
@@ -315,17 +326,15 @@ public class Database {
     }
 
     public void adicionarPontos(String alunoId, int pontos) {
+        User u = getUserById(alunoId);
+        if (!(u instanceof Aluno)) return; // só alunos recebem pontos
+
         String sql = "UPDATE usuarios SET pontos = pontos + ? WHERE id = ?";
-
         try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, pontos);
             stmt.setString(2, alunoId);
             stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
     public Resenha getResenhaParaCalculo(String id) {

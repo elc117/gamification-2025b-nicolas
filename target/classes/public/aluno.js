@@ -266,10 +266,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 if (resp.ok) {
+                    const data = await resp.json();
+
                     toast("troca feita!", "sucesso");
                     atualizarUsuario();
-                } else toast("erro ou pontos insuficientes");
+
+                    window.open(`http://localhost:7000/recibo/${data.arquivo}`, "_blank");
+                } else {
+                    toast("erro ou pontos insuficientes");
+                }
             };
+
 
             el.appendChild(div);
         });
