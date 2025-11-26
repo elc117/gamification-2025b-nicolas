@@ -4,7 +4,7 @@ function _getToastEl() {
 
 function toast(msg) {
     const t = _getToastEl();
-    if (!t) return console.warn("toast element not found");
+    if (!t) return console.warn("elemento toast não encontrado");
     t.textContent = msg;
     t.classList.add("show");
     setTimeout(() => t.classList.remove("show"), 3000);
@@ -12,13 +12,13 @@ function toast(msg) {
 
 function abrirPopupId(popupId) {
     const p = document.getElementById(popupId);
-    if (!p) return console.warn("popup not found:", popupId);
+    if (!p) return console.warn("popup não encontrado:", popupId);
     p.style.display = "flex";
 }
 
 function fecharPopupId(popupId, textoEditado = false) {
     const p = document.getElementById(popupId);
-    if (!p) return console.warn("popup not found:", popupId);
+    if (!p) return console.warn("popup não encontrado:", popupId);
     if (textoEditado && !confirm("tem certeza que quer sair sem salvar?")) return;
     p.style.display = "none";
 }
@@ -33,7 +33,7 @@ function initLogout() {
     });
 }
 
-function initLeaderboardIfPresent(fetchUrl = "/leaderboard") {
+function initLeaderboardIfPresent(fetchUrl = "https://mogbook.onrender.com/leaderboard") {
     const lista = document.getElementById('lista-leaderboard');
     const toggleBtn = document.getElementById('toggle-btn');
     if (!lista || !toggleBtn) return;
@@ -48,7 +48,7 @@ function initLeaderboardIfPresent(fetchUrl = "/leaderboard") {
             alunos = await res.json();
             render();
         } catch (err) {
-            console.error("leaderboard fetch failed", err);
+            console.error("leaderboard fetch falhou", err);
         }
     }
 

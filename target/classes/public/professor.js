@@ -50,7 +50,7 @@ form.addEventListener('submit', async e => {
     }
 
     try {
-        const res = await fetch('/cadastro-aluno', {
+        const res = await fetch('https://mogbook.onrender.com/cadastro-aluno', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ document.getElementById("form-premio").addEventListener("submit", async e => {
         return;
     }
 
-    const resp = await fetch("/premios", {
+    const resp = await fetch("https://mogbook.onrender.com/premios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome, custo })
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function carregarLeaderboard() {
         try {
-            const res = await fetch('/leaderboard');
+            const res = await fetch('https://mogbook.onrender.com/leaderboard');
             alunos = await res.json();
             renderizar();
         } catch (err) {
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function carregarResenhasPendentes() {
-        const res = await fetch('/resenhas/pendentes');
+        const res = await fetch('https://mogbook.onrender.com/resenhas/pendentes');
         const resenhas = await res.json();
         const container = document.getElementById('pendentes');
         container.innerHTML = '';
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
                     try {
-                        const resp = await fetch(`/resenhas/${id}/corrigir`, {
+                        const resp = await fetch(`https://mogbook.onrender.com/resenhas/${id}/corrigir`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

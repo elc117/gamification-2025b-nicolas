@@ -46,7 +46,11 @@ Caso você tenha simplesmente baixado o repositório, apenas execute:
 java -jar release/gamification-2025b-nicolas-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
-### 6. Resultado final: 
+### 6. Resultado final:
+
+![GIF mogbook](1126.gif)
+
+O GIF Acabou ficando longo para poder fazer a demonstração completa.
 
 ### 7. Referências:
 https://www.devmedia.com.br/java-crie-uma-conexao-com-banco-de-dados/5698
@@ -68,5 +72,7 @@ Em geral, o processo de desenvolvimento foi divertido, contudo, tive que aprende
 Trabalhar com as requisições foi interessante também (basicamente criando uma API REST), com os arquivos JSON que eu precisava mandar para lá e para cá, e como tratar eles no endpoints corretos, depois que eu comecei a entender o que eu tava de fato fazendo ajudou bastante.
 
 Ali nos recibos das trocas, tive que pesquisar como fazer um PDF com Java, foi bem legal.
+
+Também, configurar para lidar com o navegador e conseguir postar no itch.io foi chatinho, mas bom para compreender sobre CORS.
 
 Mas tirando as dificuldades, foi uma ótima experiência, por realmente achar que o projeto pode ser útil em algum momento, com algum polimento e mais tempo de desenvolvimento, sinto que posso levar para frente de alguma maneira :D.
